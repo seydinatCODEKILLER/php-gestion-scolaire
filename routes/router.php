@@ -1,10 +1,12 @@
 <?php
 
 $controllers = [
+    "security" => "security.controller.php",
     "responsable" => "responsable.controller.php",
     "attacher" => "attacher.controller.php",
     "professeur" => "professeur.controller.php",
-    "etudiant" => "etudiant.controller.php"
+    "etudiant" => "etudiant.controller.php",
+    "notFound" => "notFound.controller.php"
 ];
 
 function handleController(string $key)
@@ -16,9 +18,9 @@ function handleController(string $key)
         if (file_exists($controllerFile)) {
             require_once $controllerFile;
         } else {
-            require_once ROOT_PATH . "/controllers/not_found.php";
+            redirectURL("notFound", "error");
         }
     } else {
-        require_once ROOT_PATH . "/controllers/not_found.php";
+        redirectURL("notFound", "error");
     }
 }

@@ -29,14 +29,17 @@ function dumpDie(array $data)
 function redirectUserByRole(string $role)
 {
     switch ($role) {
-        case 'gestionnaire':
-            redirectURL("gestionnaire", "dashboard");
+        case 'RP':
+            redirectURL("responsable", "dashboard");
             break;
-        case 'client':
-            redirectURL("client", "dashboard");
+        case 'Professeur':
+            redirectURL("professeur", "dashboard");
             break;
-        case 'visiteur':
-            redirectURL("visiteur", "dashboard");
+        case 'Attache':
+            redirectURL("attacher", "dashboard");
+            break;
+        case 'Etudiant':
+            redirectURL("etudiant", "dashboard");
             break;
         default:
             redirectURL("security", "connexion");

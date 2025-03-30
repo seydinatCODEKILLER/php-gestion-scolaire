@@ -12,13 +12,11 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Itim&display=swap"
         rel="stylesheet" />
-    <title>Connexion</title>
+    <title>Error | page</title>
 </head>
 
-<body class="h-screen flex">
+<body class="h-screen flex justify-center items-center">
     <?= $content ?>
-    <?php require_once ROOT_PATH . "/includes/footer.html.php"; ?>
-    <script src="javascript/security.js"></script>
 </body>
 
 </html>

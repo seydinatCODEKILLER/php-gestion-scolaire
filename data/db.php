@@ -3,7 +3,7 @@
 function connectDB()
 {
     $host = 'localhost';
-    $dbname = 'gestion_bien';
+    $dbname = 'g_ecole_221';
     $username = 'root';
     $password = '';
 
