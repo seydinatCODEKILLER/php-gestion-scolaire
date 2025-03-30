@@ -1,5 +1,11 @@
 <?php
 
+function startSession()
+{
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+}
 
 function setFieldError(string $field, string $message)
 {

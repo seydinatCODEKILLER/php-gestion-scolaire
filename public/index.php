@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 define("ROOT_PATH", dirname(__DIR__));
 define("ROOT_URL", "http://afrocode.ecole221.sn:8000/");

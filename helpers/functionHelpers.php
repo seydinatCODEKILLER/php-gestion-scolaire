@@ -47,6 +47,23 @@ function redirectUserByRole(string $role)
     }
 }
 
+function redirectAfterError(string $role)
+{
+    switch ($role) {
+        case 'RP':
+            return "controllers=responsable&page=dashboard";
+        case 'Professeur':
+            return "controllers=professeur&page=dashboard";
+        case 'Attache':
+            return "controllers=attacher&page=dashboard";
+        case 'Etudiant':
+            return "controllers=etudiant&page=dashboard";
+        default:
+            redirectURL("security", "connexion");
+            break;
+    }
+}
+
 function is_valid_number($data): bool
 {
     if (!is_numeric($data) || $data < 0) {

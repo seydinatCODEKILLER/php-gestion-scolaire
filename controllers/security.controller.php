@@ -6,9 +6,9 @@ $page = isset($_GET["page"]) ? $_GET["page"] : "connexion";
 ob_start();
 switch ($page) {
     case 'connexion':
+        isLogged();
         clearFieldErrors();
         if (is_request_method("get")) {
-            isLogged();
             require_once ROOT_PATH . PATH_VIEW_SECURITY . "connexion.html.php";
         }
         if (is_request_method("post")) {
@@ -17,10 +17,9 @@ switch ($page) {
                 $password = $_POST["password"];
                 $user = credentialUser($email, $password);
                 if ($user) {
-                    dumpDie($user);
-                    // saveToSession("user", $user);
-                    // setSuccess("Connexion reussit");
-                    // redirectUserByRole($user["libelle"]);
+                    saveToSession("user", $user);
+                    setSuccess("Connexion reussit");
+                    redirectUserByRole($user["libelle"]);
                 } else {
                     setFieldError('credentials', 'Email ou mot de passe incorrect.');
                 }
