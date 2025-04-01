@@ -14,7 +14,7 @@
         <?php if ($role === "RP"): ?>
             <nav>
                 <ul>
-                    <li class="py-2 px-4 <?= $page === 'dashboard' ? 'bg-purple-600 text-white shadow' : 'hover:bg-gray-200' ?> rounded-3xl">
+                    <li class="py-2 px-4 <?= $page === 'dashboard' ? 'bg-purple-600 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
                         <a
                             href="<?= ROOT_URL ?>?controllers=responsable&page=dashboard"
                             class="font-medium gap-3 flex items-center text-sm">
@@ -22,7 +22,7 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li class="py-2 px-4 <?= $page === 'classes' ? 'bg-purple-600 text-white shadow' : 'hover:bg-gray-200' ?> rounded-3xl">
+                    <li class="py-2 px-4 <?= $page === 'classes' ? 'bg-purple-600 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
                         <a
                             href="<?= ROOT_URL ?>?controllers=responsable&page=classes"
                             class="font-medium gap-3 flex items-center text-sm">
@@ -30,7 +30,7 @@
                             <span>Classes</span>
                         </a>
                     </li>
-                    <li class="py-2 px-4 <?= $page === 'professeurs' ? 'bg-purple-600 text-white shadow' : 'hover:bg-gray-200' ?> rounded-3xl">
+                    <li class="py-2 px-4 <?= $page === 'professeurs' ? 'bg-purple-600 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
                         <a
                             href="<?= ROOT_URL ?>?controllers=responsable&page=professeurs"
                             class="font-medium gap-3 flex items-center text-sm">
@@ -38,7 +38,7 @@
                             <span>Professeurs</span>
                         </a>
                     </li>
-                    <li class="py-2 px-4 <?= $page === 'cours' ? 'bg-purple-600 text-white shadow' : 'hover:bg-gray-200' ?> rounded-3xl">
+                    <li class="py-2 px-4 <?= $page === 'cours' ? 'bg-purple-600 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
                         <a
                             href="<?= ROOT_URL ?>?controllers=responsable&page=cours"
                             class="font-medium gap-3 flex items-center text-sm">
@@ -140,8 +140,8 @@
     <a href="<?= ROOT_URL ?>?controllers=security&page=deconnexion">
         <button
             class="px-2 py-2 hover:bg-gray-200 hover:rounded-3xl font-medium rounded w-full">
+            <i class="ri-logout-box-r-line font-medium"></i>
             <span>Deconnexion</span>
-            <i class="ri-logout-box-line"></i>
         </button>
     </a>
 </div>

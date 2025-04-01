@@ -3,6 +3,8 @@ require_once ROOT_PATH . "/models/classe.model.php";
 require_once ROOT_PATH . "/models/professeur.model.php";
 require_once ROOT_PATH . "/models/cours.model.php";
 require_once ROOT_PATH . "/models/absence.model.php";
+require_once ROOT_PATH . "/models/filiere.model.php";
+require_once ROOT_PATH . "/models/niveaux.model.php";
 
 function getDashboardStats()
 {

@@ -18,7 +18,7 @@ function paginateResults(string $table, int $perPage = 5, int $currentPage = 1):
     ];
 }
 
-function dumpDie(array $data)
+function dumpDie(mixed $data)
 {
     echo "<pre>";
     print_r($data);
