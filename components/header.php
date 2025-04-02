@@ -1,5 +1,7 @@
 <div class="flex justify-between items-center px-4 py-2">
-    <h1 class="font-medium text-xl">Bienvenue <?= getDataFromSession("user", "prenom") ?> 👋</h1>
+    <h1 class="font-medium text-xl hidden lg:block">Bienvenue <?= getDataFromSession("user", "prenom") ?> 👋</h1>
+    <div class="w-10 h-10 bg-gray-50 flex justify-center items-center rounded-full lg:hidden" id="sidebar-device"><i class="ri-apps-2-line"></i></div>
+    <p class="px-3 py-1 rounded-3xl bg-purple-100 text-purple-500 font-medium hidden lg:block"><?= $contenue ?></p>
     <div class="flex items-center gap-2">
         <div class="flex flex-col">
             <span class="text-sm text-end text-purple-500 font-medium"><?= getDataFromSession("user", "libelle") ?></span>

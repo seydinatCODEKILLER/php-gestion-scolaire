@@ -8,12 +8,14 @@ $role = getDataFromSession("user", "libelle");
 ob_start();
 switch ($page) {
     case 'dashboard':
+        $contenue = "Dashboard";
         $data = getDashboardStats();
         $coursFiliere =  getCoursByFiliere();
         require_once ROOT_PATH . PATH_VIEW_RP . "dashboard.html.php";
         break;
     case 'classes':
         clearFieldErrors();
+        $contenue = "Gerer l'integralite de vos classe";
         $classeToEdit = null;
         $classeDetails = null;
         $formData = [];

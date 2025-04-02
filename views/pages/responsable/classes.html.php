@@ -15,13 +15,13 @@
             </div>
         <?php endif; ?>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="hidden lg:flex items-center gap-2">
         <div class="w-24 h-24 rounded-full bg-purple-100 flex items-center justify-center">
-            <img src="assets/classe.png" alt="" class="object-cover">
+            <img src="assets/main.png" alt="" class="object-cover">
         </div>
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-1">
             <h1 class="font-medium text-2xl">Gestion des classes</h1>
-            <p class="text-gray-500 w-96">
+            <p class="text-gray-400 w-96 text-sm font-medium">
                 vous pouvez ici créer, modifier et supprimer des classes. Utilisez les filtres pour rechercher rapidement
             </p>
         </div>
@@ -107,23 +107,28 @@
     </dialog>
 </div>
 <div class="px-3 mt-3">
-    <div class="flex justify-end">
+    <div class="flex md:justify-end">
         <form action="" class="flex items-center gap-2">
             <input type="hidden" name="controllers" value="responsable">
             <input type="hidden" name="page" value="classes">
-            <select name="niveau" class="py-1 px-3 border-b rounded text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                <option value="">--Niveaux--</option>
-                <?php foreach ($niveaux as $niveau): ?>
-                    <option value="<?= $niveau["id_niveau"] ?>" <?= ($filtered['niveau'] ?? '') == $niveau['id_niveau'] ? 'selected' : '' ?>><?= $niveau["libelle"] ?></option>
-                <?php endforeach; ?>
-            </select>
-            <select name="filiere" class="py-1 px-3 border-b rounded text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                <option value="">--Filieres--</option>
-                <?php foreach ($filieres as $filiere): ?>
-                    <option value="<?= $filiere["id_filiere"] ?>" <?= ($filtered['filiere'] ?? '') == $filiere['id_filiere'] ? 'selected' : '' ?>><?= $filiere["libelle"] ?></option>
-                <?php endforeach; ?>
-            </select>
-            <button type="submit" class="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded">filtrez <i class="ri-filter-3-line"></i></button>
+            <div class="flex items-center gap-2">
+                <select name="niveau" class="py-1 px-3 border-b rounded text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">--Niveaux--</option>
+                    <?php foreach ($niveaux as $niveau): ?>
+                        <option value="<?= $niveau["id_niveau"] ?>" <?= ($filtered['niveau'] ?? '') == $niveau['id_niveau'] ? 'selected' : '' ?>><?= $niveau["libelle"] ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <select name="filiere" class="py-1 px-3 border-b rounded text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">--Filieres--</option>
+                    <?php foreach ($filieres as $filiere): ?>
+                        <option value="<?= $filiere["id_filiere"] ?>" <?= ($filtered['filiere'] ?? '') == $filiere['id_filiere'] ? 'selected' : '' ?>><?= $filiere["libelle"] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <button type="submit" class="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded flex items-center">
+                <span class="hidden md:flex">filtrez</span>
+                <i class="ri-filter-3-line"></i>
+            </button>
         </form>
     </div>
     <div class="overflow-x-auto mt-5">
