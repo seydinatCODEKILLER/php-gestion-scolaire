@@ -33,3 +33,11 @@ function validateDataAddClasse(array $data): bool
     }
     return empty(getFieldErrors());
 }
+
+function validateDataAddFiliere(array $data): bool
+{
+    if (empty($data["libelle"])) {
+        setFieldError('libelle', "le libelle est requise");
+    }
+    return empty(getFieldErrors());
+}

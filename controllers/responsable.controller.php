@@ -104,7 +104,6 @@ switch ($page) {
         // Préparation des données pour la vue
         $message = getSuccess();
         clearSuccess();
-
         $currentPage = max(1, $_GET['p'] ?? 1);
         $perPage = 3;
         $result = getFilteredClasses($filtered, $currentPage, $perPage);
@@ -120,6 +119,76 @@ switch ($page) {
         break;
     case 'cours':
         require_once ROOT_PATH . PATH_VIEW_RP . "cours.html.php";
+        break;
+    case 'filieres':
+        $contenue = "Gérer les filières de l'école";
+        clearFieldErrors();
+        $filiereToEdit = null;
+        $formData = [];
+        if (is_request_method("get")) {
+            if (isset($_GET['edit_filiere_id'])) {
+                $filiereToEdit = getFiliereById($_GET['edit_filiere_id']);
+                if (!$filiereToEdit) {
+                    redirectURL("notFound", "error");
+                }
+            }
+
+            $archiveActions = [
+                'archived_filiere_id' => 'archiver',
+                'unarchive_filiere_id' => 'disponible'
+            ];
+
+            foreach ($archiveActions as $param => $status) {
+                if (isset($_GET[$param])) {
+                    if (toggleFiliereStatus($_GET[$param], $status)) {
+                        setSuccess("Filieres " . ($status === 'archiver' ? "archivée" : "désarchivée") . " avec succès");
+                    }
+                    redirectURL("responsable", "filieres");
+                }
+            }
+        }
+        if (is_request_method("post")) {
+            $formData = [
+                "id_filiere" => (int)($_POST["id_filiere"] ?? 0),
+                "libelle" => trim($_POST["libelle"] ?? ""),
+                "description" => trim($_POST["description"] ?? "")
+            ];
+
+            $isValid = validateDataAddFiliere($formData);
+
+            if ($isValid && $formData['id_filiere'] === 0) {
+                $existing = findFiliereByLibelle($formData['libelle']);
+                if ($existing) {
+                    setFieldError('libelle', "Cette filière existe déjà");
+                    $isValid = false;
+                }
+            }
+
+            if ($isValid) {
+                $success = $formData['id_filiere'] > 0
+                    ? updateFiliere($formData)
+                    : createFiliere($formData);
+
+                if ($success) {
+                    setSuccess($formData['id_filiere'] > 0
+                        ? "Filière modifiée avec succès"
+                        : "Filière ajoutée avec succès");
+                    redirectURL("responsable", "filieres");
+                } else {
+                    setFieldError("general", "Erreur lors de l'enregistrement");
+                }
+            }
+        }
+        $message = getSuccess();
+        clearSuccess();
+
+        $currentPage = max(1, $_GET['p'] ?? 1);
+        $perPage = 4;
+        $filieres = getAllFilieres([], $currentPage, $perPage);
+        require_once ROOT_PATH . PATH_VIEW_RP . "filieres.html.php";
+        break;
+    case 'niveaux':
+        require_once ROOT_PATH . PATH_VIEW_RP . "niveaux.html.php";
         break;
     default:
         redirectURL("notFound", "error");
