@@ -16,6 +16,8 @@ function validateDataAddClasse(array $data): bool
 {
     if (empty($data["libelle"])) {
         setFieldError('libelle', "le libelle est requise");
+    } elseif (findClasseByLibelle($data["libelle"])) {
+        setFieldError('libelle', "une classe avec ce libelle existe deja");
     }
     if (empty($data['filiere'])) {
         setFieldError('filiere', "La filière est obligatoire");
@@ -38,6 +40,8 @@ function validateDataAddFiliere(array $data): bool
 {
     if (empty($data["libelle"])) {
         setFieldError('libelle', "le libelle est requise");
+    } elseif (findFiliereByLibelle($data["libelle"])) {
+        setFieldError('libelle', "une filiere avec ce libelle existe deja");
     }
     return empty(getFieldErrors());
 }

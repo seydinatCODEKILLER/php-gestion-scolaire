@@ -1,13 +1,13 @@
 <div class="px-3 flex justify-between items-center mt-4">
+    <!-- Un seul conteneur pour tous les messages -->
     <div class="fixed top-5 right-5 space-y-4 transition transform duration-300 opacity-0 translate-y-2" id="alerter">
         <?php if (getFieldError("general")): ?>
-            <div role="alert" class="alert alert-success w-96 text-white">
-                <i class="ri-checkbox-circle-fill"></i>
+            <div role="alert" class="alert alert-error w-96 text-white">
+                <i class="ri-error-warning-line"></i>
                 <span><?= getFieldError("general") ?></span>
             </div>
         <?php endif; ?>
-    </div>
-    <div class="fixed top-5 right-5 space-y-4 transition transform duration-300 opacity-0 translate-y-2" id="alerter">
+
         <?php if ($message): ?>
             <div role="alert" class="alert alert-success w-96 text-white">
                 <i class="ri-checkbox-circle-fill"></i>
@@ -30,6 +30,7 @@
         <span>Nouvelle classe</span>
         <i class="ri-function-add-line"></i>
     </button>
+    <!-- Modal d'ajout et de modifications d'une classe -->
     <dialog id="addClassModal" class="modal <?= !empty(getFieldErrors()) || isset($classeToEdit) ? 'modal-open' : '' ?>">
         <div class="modal-box w-full md:max-w-xl lg:max-w-2xl">
             <div class="flex md:flex-col lg:flex-row items-center">
@@ -106,6 +107,7 @@
         </form>
     </dialog>
 </div>
+<!-- Liste des classes -->
 <div class="px-3 mt-3">
     <div class="flex md:justify-end">
         <form action="" class="flex items-center gap-2">
@@ -200,8 +202,7 @@
                                 </div>
                             <?php else: ?>
                                 <a href="?controllers=responsable&page=classes&confirm_unarchive=<?= $classe['id_classe'] ?>"
-                                    class="btn btn-sm btn-outline"
-                                    onclick="return confirm('Désarchiver cette classe ?')">
+                                    class="btn btn-sm btn-outline">
                                     <i class="ri-archive-line"></i> Désarchiver
                                 </a>
                             <?php endif; ?>

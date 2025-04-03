@@ -24,7 +24,9 @@ function setSuccess(string $message)
 
 function getSuccess()
 {
-    return $_SESSION["success"] ?? null;
+    $message = $_SESSION["success"] ?? null;
+    clearSuccess();
+    return $message;
 }
 
 function clearSuccess()

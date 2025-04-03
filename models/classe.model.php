@@ -6,7 +6,7 @@ function countClasses()
     return fetchResult($sql, [], false);
 }
 
-function toggleClassStatus(int $idClasse, string $newStatus): bool
+function toggleClasseStatus(int $idClasse, string $newStatus): bool
 {
     $sql = "UPDATE classes SET state = ? WHERE id_classe = ?";
     return executeQuery($sql, [$newStatus, $idClasse]) !== false;

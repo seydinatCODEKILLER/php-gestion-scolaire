@@ -1,4 +1,5 @@
 <div class="px-3 flex justify-between items-center mt-4">
+    <!-- Un seul conteneur pour tous les messages -->
     <div class="fixed top-5 right-5 space-y-4 transition transform duration-300 opacity-0 translate-y-2" id="alerter">
         <?php if (getFieldError("general")): ?>
             <div role="alert" class="alert alert-error w-96 text-white">
@@ -6,8 +7,7 @@
                 <span><?= getFieldError("general") ?></span>
             </div>
         <?php endif; ?>
-    </div>
-    <div class="fixed top-5 right-5 space-y-4 transition transform duration-300 opacity-0 translate-y-2" id="alerter">
+
         <?php if ($message): ?>
             <div role="alert" class="alert alert-success w-96 text-white">
                 <i class="ri-checkbox-circle-fill"></i>
