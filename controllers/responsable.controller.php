@@ -41,20 +41,17 @@ switch ($page) {
         $contenue = "Gérer les filières";
         $crudData = handleCRUD('filiere');
         extract($crudData);
-
         $currentPage = max(1, $_GET['p'] ?? 1);
         $filieres = getAllFilieres([], $currentPage, 4);
         $filiereToEdit = $toEdit;
 
         break;
-    case 'niveaux':
+    case 'niveaus':
         $contenue = "Gérer les niveaux";
         $crudData = handleCRUD('niveau');
         extract($crudData);
-
         $currentPage = max(1, $_GET['p'] ?? 1);
-        $niveaux = getAllNiveaux([], $currentPage, 5);
-        require_once ROOT_PATH . PATH_VIEW_RP . "niveaux.html.php";
+        $niveaux = getAllNiveau([], $currentPage, 5);
         break;
     default:
         redirectURL("notFound", "error");

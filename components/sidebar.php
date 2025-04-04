@@ -54,6 +54,14 @@
                             <span>Filieres</span>
                         </a>
                     </li>
+                    <li class="py-2 px-4 <?= $page === 'niveaus' ? 'bg-purple-600 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
+                        <a
+                            href="<?= ROOT_URL ?>?controllers=responsable&page=niveaus"
+                            class="font-medium gap-3 flex items-center text-sm">
+                            <i class="ri-voice-ai-line text-lg"></i>
+                            <span>Niveaux</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         <?php elseif ($role === "Professeur"): ?>

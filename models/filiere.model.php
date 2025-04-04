@@ -39,7 +39,7 @@ function getFiliereById($id_filiere)
 
 function createFiliere($data)
 {
-    $sql = "INSERT INTO filieres (libelle, description,date_creation) VALUES (?, ?)";
+    $sql = "INSERT INTO filieres (libelle, description,date_creation) VALUES (?, ?, ?)";
     $params = [
         $data['libelle'],
         $data['description'],

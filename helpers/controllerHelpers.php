@@ -1,6 +1,7 @@
 <?php
 require_once ROOT_PATH . "/models/classe.model.php";
 require_once ROOT_PATH . "/models/filiere.model.php";
+require_once ROOT_PATH . "/models/niveaux.model.php";
 
 
 function initController()
@@ -64,6 +65,7 @@ function handleGetRequests($entity, &$data)
 function handlePostRequests($entity, &$data)
 {
     $data['formData'] = buildFormData($entity);
+    // dumpDie($data["formData"]);
 
     if (validateData($entity, $data['formData'])) {
         saveData($entity, $data['formData']);
@@ -103,6 +105,10 @@ function validateData($entity, $data)
     switch ($entity) {
         case 'filiere':
             $isvalid = validateDataAddFiliere($data);
+            return $isvalid;
+            break;
+        case 'niveau':
+            $isvalid = validateDataAddNiveau($data);
             return $isvalid;
             break;
         case 'classe':

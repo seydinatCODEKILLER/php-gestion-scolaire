@@ -45,3 +45,12 @@ function validateDataAddFiliere(array $data): bool
     }
     return empty(getFieldErrors());
 }
+function validateDataAddNiveau(array $data): bool
+{
+    if (empty($data["libelle"])) {
+        setFieldError('libelle', "le libelle est requise");
+    } elseif (findNiveauByLibelle($data["libelle"])) {
+        setFieldError('libelle', "une filiere avec ce libelle existe deja");
+    }
+    return empty(getFieldErrors());
+}

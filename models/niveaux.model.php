@@ -31,25 +31,25 @@ function getNiveauById($id_niveau)
     return fetchResult($sql, [$id_niveau], false);
 }
 
-function createNiveau($data)
+function createNiveau(array $data)
 {
     $sql = "INSERT INTO niveaux (libelle) VALUES (?)";
     return executeQuery($sql, [$data['libelle']]) !== false;
 }
 
-function updateNiveau($data)
+function updateNiveau(array $data)
 {
     $sql = "UPDATE niveaux SET libelle = ? WHERE id_niveau = ?";
     return executeQuery($sql, [$data['libelle'], $data['id_niveau']]) !== false;
 }
 
-function toggleNiveauStatus($id_niveau, $status)
+function toggleNiveauStatus($id_niveau, string $status)
 {
     $sql = "UPDATE niveaux SET state = ? WHERE id_niveau = ?";
     return executeQuery($sql, [$status, $id_niveau]) !== false;
 }
 
-function findNiveauByLibelle($libelle)
+function findNiveauByLibelle(string $libelle): array | false
 {
     $sql = "SELECT * FROM niveaux WHERE libelle = ?";
     return fetchResult($sql, [$libelle], false);
