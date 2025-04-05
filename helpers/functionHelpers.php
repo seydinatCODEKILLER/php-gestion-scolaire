@@ -88,3 +88,32 @@ function redirectURL(string $controller, string $page, array $additionalParams =
     header("Location: ?" . $queryString);
     exit;
 }
+
+function uploadAvatar(array $file, string $role, string $prefix): string
+{
+    $uploadDir = ROOT_PATH . "public/uploads/$role/";
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $filename = uniqid($prefix) . '.' . $extension;
+    $destination = $uploadDir . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        throw new Exception("Échec de l'upload du fichier");
+    }
+
+    return $filename;
+}
+
+function deleteAvatar(string $filename, string $role): bool
+{
+    if (!empty($filename)) {
+        $filePath = ROOT_PATH . "public/uploads/$role/" . $filename;
+        if (file_exists($filePath)) {
+            return unlink($filePath);
+        }
+    }
+    return false;
+}

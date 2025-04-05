@@ -6,6 +6,12 @@ function countClasses()
     return fetchResult($sql, [], false);
 }
 
+function getAllClasses()
+{
+    $sql = "SELECT * FROM classes WHERE state = 'disponible'";
+    return fetchResult($sql);
+}
+
 function toggleClasseStatus(int $idClasse, string $newStatus): bool
 {
     $sql = "UPDATE classes SET state = ? WHERE id_classe = ?";

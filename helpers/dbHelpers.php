@@ -35,13 +35,18 @@ function logSqlError(PDOException $e, string $sql): void
     die("Erreur SQL: " . $e->getMessage() . "\nRequête: " . $sql);
 }
 
-function executeQuery(string $sql, array $params = []): PDOStatement|false
+function executeQuery(string $sql, array $params = [], bool $returnLastInsertId = false): PDOStatement|int|false
 {
     try {
         $pdo = connectDB();
         $stmt = prepareStatement($pdo, $sql);
         bindParams($stmt, $params);
         $stmt->execute();
+
+        if ($returnLastInsertId) {
+            return $pdo->lastInsertId();
+        }
+
         return $stmt;
     } catch (PDOException $e) {
         logSqlError($e, $sql);

@@ -2,6 +2,7 @@
 require_once ROOT_PATH . "/models/classe.model.php";
 require_once ROOT_PATH . "/models/filiere.model.php";
 require_once ROOT_PATH . "/models/niveaux.model.php";
+require_once ROOT_PATH . "/models/professeur.model.php";
 
 
 function initController()
@@ -47,6 +48,14 @@ function handleGetRequests($entity, &$data)
     if (isset($_GET[$detailKey])) {
         $func = "get{$entity}Details";
         $data['details'] = $func($_GET[$detailKey]);
+
+        if ($entity === 'professeur' && $data['details']) {
+            $data['profClasses'] = getClassesByProfesseur(
+                $_GET[$detailKey],
+                $_GET['annee'] ?? ""
+            );
+        }
+
         !$data['details'] && setFieldError("general", ucfirst($entity) . " introuvable");
     }
 
@@ -55,6 +64,11 @@ function handleGetRequests($entity, &$data)
     if (isset($_GET[$editKey])) {
         $func = "get{$entity}ById";
         $data['toEdit'] = $func($_GET[$editKey]);
+
+        if ($entity === 'professeur' && $data['toEdit']) {
+            $profDetails = getProfesseurDetails($data['toEdit']['id_professeur']);
+            $data['profClassesIds'] = array_column($profDetails['classes'], 'id_classe');
+        }
         !$data['toEdit'] && redirectURL("notFound", "error");
     }
 
@@ -65,8 +79,6 @@ function handleGetRequests($entity, &$data)
 function handlePostRequests($entity, &$data)
 {
     $data['formData'] = buildFormData($entity);
-    // dumpDie($data["formData"]);
-
     if (validateData($entity, $data['formData'])) {
         saveData($entity, $data['formData']);
     }
@@ -97,6 +109,28 @@ function buildFormData($entity)
                 "annee_scolaire" => trim($_POST["annee_scolaire"]),
                 "capacite" => (int)($_POST["capacite"])
             ];
+            break;
+        case 'professeur':
+            $avatar = '';
+            if (!empty($_FILES['avatar']['name'])) {
+                $avatar = uploadAvatar($_FILES['avatar'], "professeur", "pro_");
+            } elseif (!empty($_POST['current_avatar'])) {
+                $avatar = $_POST['current_avatar'];
+            }
+
+            return [
+                'id_professeur' => (int)($_POST['id_professeur'] ?? 0),
+                'id_utilisateur' => (int)($_POST['id_utilisateur'] ?? 0),
+                'nom' => trim($_POST['nom'] ?? ''),
+                'prenom' => trim($_POST['prenom'] ?? ''),
+                'email' => trim($_POST['email'] ?? ''),
+                'password' => $_POST['password'] ?? '',
+                'telephone' => trim($_POST['telephone'] ?? ''),
+                'specialite' => trim($_POST['specialite'] ?? ''),
+                'grade' => trim($_POST['grade'] ?? ''),
+                'avatar' => $avatar,
+                'classes' => $_POST['classes'] ?? []
+            ];
     }
 }
 
@@ -113,6 +147,10 @@ function validateData($entity, $data)
             break;
         case 'classe':
             $isvalid = validateDataAddClasse($data);
+            return $isvalid;
+            break;
+        case 'professeur':
+            $isvalid = validateDataAddProfesseur($data);
             return $isvalid;
             break;
     }

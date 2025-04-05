@@ -32,7 +32,16 @@ switch ($page) {
 
         break;
     case 'professeurs':
-        require_once ROOT_PATH . PATH_VIEW_RP . "professeurs.html.php";
+        $contenue = "Gérer les professeurs";
+        $crudData = handleCRUD('professeur', [
+            'search' => $_GET['search'] ?? ''
+        ]);
+        extract($crudData);
+        $currentPage = max(1, $_GET['p'] ?? 1);
+        $result = getAllProfesseurs($filtered, $currentPage, 2);
+        $professeurs = $result;
+        $classes = getAllClasses();
+
         break;
     case 'cours':
         require_once ROOT_PATH . PATH_VIEW_RP . "cours.html.php";
