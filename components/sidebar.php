@@ -1,6 +1,6 @@
 <div
     id="sidebar"
-    class="flex flex-col justify-between p-3 fixed left-0 shadow-md h-full text-gray-900 bg-gray-50 w-64 lg:w-52 md:flex transform transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0 z-50">
+    class="flex flex-col justify-between p-3 fixed left-0 shadow-md h-full text-gray-900 w-64 lg:w-52 md:flex transform transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0 z-50">
     <div class="flex flex-col gap-6">
         <div class="flex justify-between">
             <div class="flex items-center gap-2 text-md">
@@ -67,7 +67,7 @@
         <?php elseif ($role === "Professeur"): ?>
             <nav>
                 <ul>
-                    <li class="py-2 px-4 bg-purple-50 hover:bg-purple-100 rounded-3xl">
+                    <li class="py-2 px-4 <?= $page === 'dashboard' ? 'bg-orange-500 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
                         <a
                             href="<?= ROOT_URL ?>?controllers=client&page=dashboard"
                             class="font-medium gap-3 flex items-center">
@@ -75,20 +75,20 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li class="py-2 px-4 hover:bg-purple-100 rounded-3xl">
+                    <li class="py-2 px-4 <?= $page === 'cours' ? 'bg-orange-500 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
                         <a
-                            href="<?= ROOT_URL ?>?controllers=client&page=catalogues"
+                            href="<?= ROOT_URL ?>?controllers=client&page=cours"
                             class="font-medium gap-3 flex items-center">
-                            <i class="ri-nurse-line text-lg"></i>
-                            <span>Catalogues</span>
+                            <i class="ri-honour-line text-lg"></i>
+                            <span>Mes cours</span>
                         </a>
                     </li>
-                    <li class="py-2 px-4 hover:bg-purple-100 rounded-3xl">
+                    <li class="py-2 px-4 <?= $page === 'absences' ? 'bg-orange-500 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
                         <a
-                            href="<?= ROOT_URL ?>?controllers=client&page=reservations"
+                            href="<?= ROOT_URL ?>?controllers=client&page=absences"
                             class="font-medium gap-3 flex items-center">
-                            <i class="ri-user-line text-lg"></i>
-                            <span>Reservations</span>
+                            <i class="ri-line-chart-fill text-lg"></i>
+                            <span>Absences</span>
                         </a>
                     </li>
                 </ul>
@@ -155,7 +155,7 @@
     </div>
     <a href="<?= ROOT_URL ?>?controllers=security&page=deconnexion">
         <button
-            class="px-2 py-2 bg-gradient-to-b from-purple-600 to-gray-500 rounded-3xl font-medium shadow-xl text-white w-full">
+            class="px-2 py-2 rounded-3xl border boder-gray-200 font-medium shadow-xl w-full">
             <i class="ri-logout-box-r-line font-medium"></i>
             <span>Deconnexion</span>
         </button>

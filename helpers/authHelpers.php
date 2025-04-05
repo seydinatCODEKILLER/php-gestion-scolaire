@@ -20,7 +20,7 @@ function isLogged()
 function credentialUser(string $email, string $password): array|null
 {
     $sql = "
-    SELECT u.nom, u.prenom, u.avatar, r.libelle
+    SELECT u.nom, u.id_utilisateur, u.prenom, u.avatar, r.libelle
     FROM utilisateurs u
     JOIN roles r ON r.id_role = u.id_role
     WHERE u.email = ? AND u.password = ?";

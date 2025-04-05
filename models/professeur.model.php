@@ -206,3 +206,90 @@ function getClassesByProfesseur(int $idProfesseur, string $annee)
 
     return fetchResult($sql, $params);
 }
+
+function getProfesseurStats($idProfesseur)
+{
+    // Nombre total de cours
+    $sql = "SELECT COUNT(*) as nb_cours FROM cours WHERE id_professeur = ?";
+    $nbCours = fetchResult($sql, [$idProfesseur], false)['nb_cours'];
+
+    // Heures enseignées
+    $sqlHeures = "
+    SELECT SUM(nombre_heures) as total_heures FROM cours 
+    WHERE id_professeur = ? AND statut = 'effectué'
+    ";
+    $heures = fetchResult($sqlHeures, [$idProfesseur], false)['total_heures'] ?? 0;
+
+    // Taux d'absence moyen
+    $sqlTaux = "SELECT AVG(nb_absences/nb_etudiants)*100 as taux_absence
+                FROM (
+                    SELECT c.id_cours, 
+                    COUNT(DISTINCT e.id_etudiant) as nb_etudiants,
+                    COUNT(a.id_absence) as nb_absences
+                    FROM cours c
+                    JOIN cours_classes cc ON c.id_cours = cc.id_cours
+                    JOIN inscriptions i ON cc.id_classe = i.id_classe
+                    JOIN etudiants e ON i.id_etudiant = e.id_etudiant
+                    LEFT JOIN absences a ON (a.id_cours = c.id_cours AND a.id_etudiant = e.id_etudiant)
+                    WHERE c.id_professeur = ?
+                    GROUP BY c.id_cours
+                ) as stats";
+    $tauxAbsence = round(fetchResult($sqlTaux, [$idProfesseur], false)['taux_absence'] ?? 0, 2);
+
+    return [
+        'nb_cours' => $nbCours,
+        'heures_enseignees' => $heures,
+        'taux_absence' => $tauxAbsence
+    ];
+}
+
+function getAbsencesByModule($idProfesseur)
+{
+    $sql = "SELECT m.libelle, COUNT(a.id_absence) as nb_absences,
+            COUNT(DISTINCT c.id_cours) as nb_cours,
+            COUNT(a.id_absence)/COUNT(DISTINCT c.id_cours) as moyenne_absences
+            FROM modules m
+            JOIN cours c ON m.id_module = c.id_module
+            LEFT JOIN absences a ON c.id_cours = a.id_cours
+            WHERE c.id_professeur = ?
+            GROUP BY m.id_module
+            ORDER BY nb_absences DESC";
+    return fetchResult($sql, [$idProfesseur]);
+}
+
+function getTopAbsentStudents($idProfesseur, $limit = 5)
+{
+    $sql = "SELECT e.id_etudiant, u.nom, u.prenom, 
+            COUNT(a.id_absence) as nb_absences,
+            SUM(c.nombre_heures) as heures_manquees
+            FROM etudiants e
+            JOIN utilisateurs u ON e.id_utilisateur = u.id_utilisateur
+            JOIN inscriptions i ON e.id_etudiant = i.id_etudiant
+            JOIN cours_classes cc ON i.id_classe = cc.id_classe
+            JOIN cours c ON cc.id_cours = c.id_cours
+            LEFT JOIN absences a ON (a.id_etudiant = e.id_etudiant AND a.id_cours = c.id_cours)
+            WHERE c.id_professeur = ?
+            GROUP BY e.id_etudiant
+            ORDER BY nb_absences DESC
+            LIMIT ?";
+    return fetchResult($sql, [$idProfesseur, $limit]);
+}
+
+function getCoursByModule($idProfesseur)
+{
+    $sql = "SELECT 
+                m.id_module,
+                m.libelle,
+                COUNT(c.id_cours) AS nb_cours,
+                SUM(c.nombre_heures) AS total_heures,
+                GROUP_CONCAT(DISTINCT cl.libelle SEPARATOR ', ') AS classes
+            FROM modules m
+            JOIN cours c ON m.id_module = c.id_module
+            JOIN cours_classes cc ON c.id_cours = cc.id_cours
+            JOIN classes cl ON cc.id_classe = cl.id_classe
+            WHERE c.id_professeur = ?
+            GROUP BY m.id_module
+            ORDER BY nb_cours DESC";
+
+    return fetchResult($sql, [$idProfesseur]);
+}
