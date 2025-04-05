@@ -5,6 +5,8 @@ require_once ROOT_PATH . "/models/cours.model.php";
 require_once ROOT_PATH . "/models/absence.model.php";
 require_once ROOT_PATH . "/models/filiere.model.php";
 require_once ROOT_PATH . "/models/niveaux.model.php";
+require_once ROOT_PATH . "/models/module.model.php";
+require_once ROOT_PATH . "/models/semestre.model.php";
 
 function getDashboardStats()
 {

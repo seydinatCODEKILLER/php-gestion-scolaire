@@ -56,6 +56,11 @@ function handleGetRequests($entity, &$data)
             );
         }
 
+        if ($entity === 'cours' && $data['details']) {
+            $data['coursClasses'] = getClassesByCours($_GET[$detailKey]);
+            $data['coursEtudiants'] = getEtudiantsByCours($_GET[$detailKey]);
+        }
+
         !$data['details'] && setFieldError("general", ucfirst($entity) . " introuvable");
     }
 
@@ -68,6 +73,9 @@ function handleGetRequests($entity, &$data)
         if ($entity === 'professeur' && $data['toEdit']) {
             $profDetails = getProfesseurDetails($data['toEdit']['id_professeur']);
             $data['profClassesIds'] = array_column($profDetails['classes'], 'id_classe');
+        }
+        if ($entity === 'cours' && $data['toEdit']) {
+            $data['coursClassesIds'] = array_column(getClassesByCours($data['toEdit']['id_cours']), 'id_classe');
         }
         !$data['toEdit'] && redirectURL("notFound", "error");
     }
@@ -131,6 +139,22 @@ function buildFormData($entity)
                 'avatar' => $avatar,
                 'classes' => $_POST['classes'] ?? []
             ];
+            break;
+        case 'cours':
+            return [
+                'id_cours' => (int)($_POST['id_cours'] ?? 0),
+                'id_module' => (int)$_POST['id_module'],
+                'id_professeur' => (int)$_POST['id_professeur'],
+                'id_semestre' => (int)$_POST['id_semestre'],
+                'date_cours' => $_POST['date_cours'],
+                'heure_debut' => $_POST['heure_debut'],
+                'heure_fin' => $_POST['heure_fin'],
+                'nombre_heures' => (int)$_POST['nombre_heures'],
+                'salle' => trim($_POST['salle']),
+                'statut' => 'planifié',
+                'classes' => $_POST['classes'] ?? []
+            ];
+            break;
     }
 }
 
@@ -153,6 +177,10 @@ function validateData($entity, $data)
             $isvalid = validateDataAddProfesseur($data);
             return $isvalid;
             break;
+        case 'cours':
+            $isvalid = validateDataAddCours($data);
+            return $isvalid;
+            break;
     }
 }
 
@@ -161,11 +189,12 @@ function saveData($entity, $data)
     $isUpdate = $data["id_{$entity}"] > 0;
     $func = $isUpdate ? "update{$entity}" : "create{$entity}";
 
+
     if ($func($data)) {
         setSuccess($isUpdate
             ? ucfirst($entity) . " modifié avec succès"
             : ucfirst($entity) . " ajouté avec succès");
-        redirectURL("responsable", "{$entity}s");
+        $entity === "cours" ? redirectURL("responsable", "{$entity}") :  redirectURL("responsable", "{$entity}s");
     } else {
         setFieldError("general", "Erreur lors de l'enregistrement");
     }
@@ -188,5 +217,11 @@ function handleArchiveActions($entity)
             }
             redirectURL("responsable", "{$entity}s");
         }
+    }
+    if (isset($_GET['cancel_cours_id'])) {
+        if (toggleCoursStatus($_GET['cancel_cours_id'], 'annulé')) {
+            setSuccess("Cours annulé avec succès");
+        }
+        redirectURL("responsable", "cours");
     }
 }

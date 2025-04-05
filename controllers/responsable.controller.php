@@ -1,7 +1,7 @@
 <?php
 isUserLoggedIn();
 require_once ROOT_PATH . "/models/responsable.model.php";
-require_once ROOT_PATH . "/helpers/controllerHelpers.php";
+require_once ROOT_PATH . "/helpers/controllerRpHelpers.php";
 
 define("PATH_VIEW_RP", "/views/pages/responsable/");
 $controller = initController();
@@ -44,7 +44,28 @@ switch ($page) {
 
         break;
     case 'cours':
-        require_once ROOT_PATH . PATH_VIEW_RP . "cours.html.php";
+        $contenue = "Gérer les cours";
+        $crudData = handleCRUD('cours', [
+            'statut' => $_GET['statut'] ?? 'planifié',
+            'date_debut' => $_GET['date_debut'] ?? '',
+            'date_fin' => $_GET['date_fin'] ?? '',
+            'id_classe' => $_GET['id_classe'] ?? ''
+        ]);
+
+        extract($crudData);
+
+        $currentPage = max(1, $_GET['p'] ?? 1);
+        $result = getAllCours($filtered, $currentPage, 3);
+        $cours = $result['data'];
+        $pagination = $result['pagination'];
+
+        // Pour les formulaires
+        $modules = getAllModules();
+        $professeurs = getAllProfesseurs()["data"];
+        $classes = getAllClasses();
+        $semestres = getAllSemestres();
+        $coursToEdit = $toEdit;
+
         break;
     case 'filieres':
         $contenue = "Gérer les filières";

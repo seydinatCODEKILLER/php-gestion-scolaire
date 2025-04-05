@@ -124,3 +124,84 @@ function validateDataAddProfesseur(array $data): bool
 
     return empty(getFieldErrors());
 }
+
+function validateDataAddCours(array $data): bool
+{
+    if (empty($data['id_module'])) {
+        setFieldError('id_module',  "Veuillez sélectionner un module");
+    }
+
+    if (empty($data['id_professeur'])) {
+        setFieldError('id_professeur', "Veuillez sélectionner un professeur");
+    }
+
+    if (empty($data['id_semestre'])) {
+        setFieldError('id_semestre', "Veuillez sélectionner un semestre");
+    }
+
+    if (empty($data['date_cours'])) {
+        setFieldError('date_cours', "La date du cours est obligatoire");
+    } elseif (strtotime($data['date_cours']) < strtotime('today')) {
+        setFieldError('date_cours', "La date du cours doit être au moins aujourd'hui");
+    }
+
+    if (empty($data['heure_debut'])) {
+        setFieldError('heure_debut', "L'heure de début est obligatoire");
+    }
+
+    if (empty($data['heure_fin'])) {
+        setFieldError('heure_fin', "L'heure de fin est obligatoire");
+    }
+
+    if (
+        !empty($data['heure_debut']) && !empty($data['heure_fin']) &&
+        $data['heure_debut'] >= $data['heure_fin']
+    ) {
+        setFieldError('heure_fin', "L'heure de fin doit être après l'heure de début");
+    }
+
+    if (
+        !empty($data['heure_debut']) && !empty($data['heure_fin']) &&
+        (strtotime($data['heure_fin']) - strtotime($data['heure_debut'])) < 3600
+    ) {
+        setFieldError('heure_fin', "La durée minimale d'un cours est de 1 heure");
+    }
+
+    if (
+        !empty($data['id_professeur']) && !empty($data['date_cours']) &&
+        !empty($data['heure_debut']) && !empty($data['heure_fin']) &&
+        !checkProfesseurDisponibilite(
+            $data['id_professeur'],
+            $data['date_cours'],
+            $data['heure_debut'],
+            $data['heure_fin'],
+            $data['id_cours'] ?: null
+        )
+    ) {
+        setFieldError('date_cours', "Le professeur a déjà un cours programmé à cette plage horaire");
+    }
+
+    if (
+        !empty($data['salle']) && !empty($data['date_cours']) &&
+        !empty($data['heure_debut']) && !empty($data['heure_fin']) &&
+        !checkSalleDisponibilite(
+            $data['salle'],
+            $data['date_cours'],
+            $data['heure_debut'],
+            $data['heure_fin'],
+            $data['id_cours'] ?: null
+        )
+    ) {
+        setFieldError('salle', "La salle est déjà occupée à cette plage horaire");
+    }
+
+    if (empty($data['classes'])) {
+        setFieldError('classes', "Vous devez sélectionner au moins une classe");
+    }
+
+    if (empty($data['salle'])) {
+        setFieldError('salle', "Vous devez selectionnez une salle");
+    }
+
+    return empty(getFieldErrors());
+}
