@@ -188,7 +188,7 @@ function toggleProfesseurStatus(int $idProfesseur, string $newStatus): bool
     return executeQuery($sql, [$newStatus, $idProfesseur]) !== false;
 }
 
-function getClassesByProfesseur(int $idProfesseur, string $annee)
+function getClassesByProfesseur(int $idProfesseur, string $annee = "")
 {
     $sql = "SELECT c.*, f.libelle as filiere, n.libelle as niveau
             FROM classes_professeur cp
@@ -292,4 +292,102 @@ function getCoursByModule($idProfesseur)
             ORDER BY nb_cours DESC";
 
     return fetchResult($sql, [$idProfesseur]);
+}
+
+function getCoursByProfesseurs(int $idProfesseur, array $filters = [], int $page = 1, int $perPage = 10): array
+{
+    $sql = "SELECT c.*, m.libelle as module_libelle,
+            GROUP_CONCAT(cl.libelle SEPARATOR ', ') as classes_list
+            FROM cours c
+            JOIN modules m ON c.id_module = m.id_module
+            JOIN cours_classes cc ON c.id_cours = cc.id_cours
+            JOIN classes cl ON cc.id_classe = cl.id_classe
+            WHERE c.id_professeur = ?";
+
+    $params = [$idProfesseur];
+
+    // Application des filtres
+    if (!empty($filters['statut'])) {
+        $sql .= " AND c.statut = ?";
+        $params[] = $filters['statut'];
+    }
+
+    if (!empty($filters['date_debut'])) {
+        $sql .= " AND c.date_cours >= ?";
+        $params[] = $filters['date_debut'];
+    }
+
+    if (!empty($filters['date_fin'])) {
+        $sql .= " AND c.date_cours <= ?";
+        $params[] = $filters['date_fin'];
+    }
+
+    if (!empty($filters['id_classe'])) {
+        $sql .= " AND cc.id_classe = ?";
+        $params[] = $filters['id_classe'];
+    }
+
+    // Group by pour éviter les doublons avec GROUP_CONCAT
+    $sql .= " GROUP BY c.id_cours";
+    $sql .= " ORDER BY c.date_cours DESC, c.heure_debut DESC";
+
+    $result = paginateQuery($sql, $params, $page, $perPage);
+
+
+    return $result;
+}
+
+function enregistrerAbsences(int $idCours, array $absentsIds): bool
+{
+    // 1. Supprimer les anciennes absences
+    $sqlDelete = "DELETE FROM absences WHERE id_cours = ?";
+    $deleted = executeQuery($sqlDelete, [$idCours]);
+    if (!$deleted) return false;
+
+    // 2. Ajouter les nouvelles absences
+    if (!empty($absentsIds)) {
+        $idProfesseur = getDataFromSession("user", "id_utilisateur");
+        $sqlInsert = "INSERT INTO absences (id_etudiant, id_cours, date_absence, id_marqueur) 
+                    VALUES (?, ?, CURDATE(), ?)";
+
+        foreach ($absentsIds as $idEtudiant) {
+            $inserted = executeQuery($sqlInsert, [$idEtudiant, $idCours, $idProfesseur]);
+            if (!$inserted) return false;
+        }
+    }
+
+    // 3. Mettre à jour le statut du cours
+    $sqlUpdate = "UPDATE cours SET statut = 'effectué' WHERE id_cours = ?";
+    $updated = executeQuery($sqlUpdate, [$idCours]);
+    if (!$updated) return false;
+    return true;
+}
+
+function getProchainCours(int $profId): ?array
+{
+    $sql = "SELECT c.*, m.libelle as module_libelle
+            FROM cours c
+            JOIN modules m ON c.id_module = m.id_module
+            WHERE c.id_professeur = ? 
+            AND c.date_cours >= CURDATE()
+            AND c.statut = 'planifié'
+            ORDER BY c.date_cours ASC, c.heure_debut ASC
+            LIMIT 1";
+
+    return fetchResult($sql, [$profId], false) ?: null;
+}
+
+function getRecentAbsences(int $profId, int $limit = 5): array
+{
+    $sql = "SELECT a.*, e.matricule, u.nom, u.prenom, m.libelle as module
+            FROM absences a
+            JOIN etudiants e ON a.id_etudiant = e.id_etudiant
+            JOIN utilisateurs u ON e.id_utilisateur = u.id_utilisateur
+            JOIN cours c ON a.id_cours = c.id_cours
+            JOIN modules m ON c.id_module = m.id_module
+            WHERE c.id_professeur = ?
+            ORDER BY a.date_absence DESC
+            LIMIT ?";
+
+    return fetchResult($sql, [$profId, $limit]);
 }

@@ -1,27 +1,37 @@
 <?php
 isUserLoggedIn();
-require_once ROOT_PATH . "/models/professeur.model.php";
 require_once ROOT_PATH . "/helpers/controllerProfHelpers.php";
 
-define("PATH_VIEW_RP", "/views/pages/professeurs/");
+define("PATH_VIEW_PROF", "/views/pages/professeurs/");
 $controller = initController();
 extract($controller);
 
 switch ($page) {
     case 'dashboard':
-        $contenue = "Dashboard";
-        $data = [
-            'stats' => getProfesseurStats($userId),
-            'absences_par_module' => getAbsencesByModule($userId),
-            'top_absents' => getTopAbsentStudents($userId),
-            'cours_par_module' => getCoursByModule($userId)
-        ];
+        $contenue = "Tableau de bord";
+        $data = getDashboardData($userId);
+        extract($data);
         break;
+
+    case 'cours':
+        $contenue = "Mes cours";
+        $crudData = handleCoursRequests($userId);
+        extract($crudData);
+        break;
+
+    case 'absences':
+        $contenue = "Gestion des absences";
+        $crudData = handleAbsencesRequests($userId);
+        extract($crudData);
+        // dumpDie($crudData);
+        break;
+
     default:
         redirectURL("notFound", "error");
         break;
 }
+
 ob_start();
-require_once ROOT_PATH . PATH_VIEW_RP . ($page === 'dashboard' ? 'dashboard.html.php' : "{$page}.html.php");
+require_once ROOT_PATH . PATH_VIEW_PROF . ($page === 'dashboard' ? 'dashboard.html.php' : "{$page}.html.php");
 $content = ob_get_clean();
 require_once ROOT_PATH . "/views/layout/public.layout.php";

@@ -90,16 +90,22 @@ function getClassesByCours($id_cours)
     return fetchResult($sql, [$id_cours]);
 }
 
-function getEtudiantsByCours($id_cours)
+function getEtudiantsByCours(int $idCours): array
 {
-    $sql = "SELECT e.*, u.nom, u.prenom, c.libelle as libelle_classe
-            FROM etudiants e
+    $sql = "SELECT e.id_etudiant, e.matricule, 
+                   u.nom, u.prenom, u.avatar,
+                   c.libelle as libelle_classe,
+                   IFNULL(a.id_absence, 0) as absent
+            FROM cours_classes cc
+            JOIN inscriptions i ON cc.id_classe = i.id_classe
+            JOIN etudiants e ON i.id_etudiant = e.id_etudiant
             JOIN utilisateurs u ON e.id_utilisateur = u.id_utilisateur
-            JOIN inscriptions i ON e.id_etudiant = i.id_etudiant
-            JOIN classes c ON i.id_classe = c.id_classe
-            JOIN cours_classes cc ON i.id_classe = cc.id_classe
-            WHERE cc.id_cours = ?";
-    return fetchResult($sql, [$id_cours]);
+            JOIN classes c ON cc.id_classe = c.id_classe
+            LEFT JOIN absences a ON (a.id_etudiant = e.id_etudiant AND a.id_cours = cc.id_cours)
+            WHERE cc.id_cours = ?
+            ORDER BY u.nom, u.prenom";
+
+    return fetchResult($sql, [$idCours]);
 }
 
 function createCours($data)

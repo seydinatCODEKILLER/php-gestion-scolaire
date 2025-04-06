@@ -69,7 +69,7 @@
                 <ul>
                     <li class="py-2 px-4 <?= $page === 'dashboard' ? 'bg-orange-500 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
                         <a
-                            href="<?= ROOT_URL ?>?controllers=client&page=dashboard"
+                            href="<?= ROOT_URL ?>?controllers=professeur&page=dashboard"
                             class="font-medium gap-3 flex items-center">
                             <i class="ri-home-3-line text-lg"></i>
                             <span>Dashboard</span>
@@ -77,7 +77,7 @@
                     </li>
                     <li class="py-2 px-4 <?= $page === 'cours' ? 'bg-orange-500 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
                         <a
-                            href="<?= ROOT_URL ?>?controllers=client&page=cours"
+                            href="<?= ROOT_URL ?>?controllers=professeur&page=cours"
                             class="font-medium gap-3 flex items-center">
                             <i class="ri-honour-line text-lg"></i>
                             <span>Mes cours</span>
@@ -85,7 +85,7 @@
                     </li>
                     <li class="py-2 px-4 <?= $page === 'absences' ? 'bg-orange-500 text-white shadow-xl' : 'hover:bg-gray-200' ?> rounded-3xl">
                         <a
-                            href="<?= ROOT_URL ?>?controllers=client&page=absences"
+                            href="<?= ROOT_URL ?>?controllers=professeur&page=absences"
                             class="font-medium gap-3 flex items-center">
                             <i class="ri-line-chart-fill text-lg"></i>
                             <span>Absences</span>

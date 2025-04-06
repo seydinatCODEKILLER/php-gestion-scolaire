@@ -10,7 +10,7 @@
                 <p class="text-blue-500 font-medium text-lg">Cours planifiés</p>
             </div>
             <div>
-                <p class="font-medium text-5xl"><?= $data["stats"]["nb_cours"] ?></p>
+                <p class="font-medium text-5xl"><?= $stats['nb_cours'] ?? 0 ?></p>
                 <span class="text-gray-400 font-medium">Total de vos cours</span>
             </div>
         </div>
@@ -24,7 +24,7 @@
                 <p class="text-green-500 font-medium text-lg">Heures enseignées</p>
             </div>
             <div>
-                <p class="font-medium text-5xl"><?= $data["stats"]["heures_enseignees"] ?></p>
+                <p class="font-medium text-5xl"><?= $stats['heures_enseignees'] ?? 0 ?></p>
                 <span class="text-gray-400 font-medium">Heures cette année</span>
             </div>
         </div>
@@ -38,7 +38,7 @@
                 <p class="text-orange-500 font-medium text-lg">Absences moyennes</p>
             </div>
             <div>
-                <p class="font-medium text-5xl"><?= $data["stats"]["taux_absence"] ?>%</p>
+                <p class="font-medium text-5xl"><?= $stats['taux_absence'] ?? 0 ?>%</p>
                 <span class="text-gray-400 font-medium">Par cours</span>
             </div>
         </div>
@@ -52,7 +52,7 @@
                 <p class="text-red-500 font-medium text-lg">Top absentéisme</p>
             </div>
             <div>
-                <p class="font-medium text-5xl"><?= count($data["top_absents"]) ?></p>
+                <p class="font-medium text-5xl"><?= count($top_absents ?? []) ?></p>
                 <span class="text-gray-400 font-medium">Étudiants à suivre</span>
             </div>
         </div>
@@ -81,11 +81,11 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <?php foreach ($data["top_absents"] as $etudiant): ?>
+                        <?php foreach (($top_absents ?? []) as $etudiant): ?>
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap"><?= $etudiant['nom'] ?> <?= $etudiant['prenom'] ?></td>
-                                <td class="px-6 py-4 whitespace-nowrap"><?= $etudiant['nb_absences'] ?></td>
-                                <td class="px-6 py-4 whitespace-nowrap"><?= $etudiant['heures_manquees'] ?>h</td>
+                                <td class="px-6 py-4 whitespace-nowrap"><?= $etudiant['nom'] ?? '' ?> <?= $etudiant['prenom'] ?? '' ?></td>
+                                <td class="px-6 py-4 whitespace-nowrap"><?= $etudiant['nb_absences'] ?? 0 ?></td>
+                                <td class="px-6 py-4 whitespace-nowrap"><?= $etudiant['heures_manquees'] ?? 0 ?>h</td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -97,45 +97,46 @@
 
 <script>
     // Graphique en courbe pour les absences par module
-    const absencesCtx = document.getElementById('absencesChart').getContext('2d');
-    new Chart(absencesCtx, {
-        type: 'bar',
-        data: {
-            labels: <?= json_encode(array_column($data["absences_par_module"], 'libelle')) ?>,
-            datasets: [{
-                label: 'Nombre d\'absences',
-                data: <?= json_encode(array_column($data["absences_par_module"], 'nb_absences')) ?>,
-                borderColor: '#3B82F6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                tension: 0.3,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
+    const absencesCtx = document.getElementById('absencesChart')?.getContext('2d');
+    if (absencesCtx) {
+        new Chart(absencesCtx, {
+            type: 'bar',
+            data: {
+                labels: <?= json_encode(array_column($absences_par_module ?? [], 'libelle')) ?>,
+                datasets: [{
+                    label: 'Nombre d\'absences',
+                    data: <?= json_encode(array_column($absences_par_module ?? [], 'nb_absences')) ?>,
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                const moy = <?= json_encode(array_column($absences_par_module ?? [], 'moyenne_absences')) ?>[context.dataIndex];
+                                return moy ? `Moyenne: ${moy.toFixed(1)} absences/cours` : '';
+                            }
+                        }
+                    }
                 },
-                tooltip: {
-                    callbacks: {
-                        afterLabel: function(context) {
-                            const data = context.dataset.data[context.dataIndex];
-                            const moy = <?= json_encode(array_column($data["absences_par_module"], 'moyenne_absences')) ?>[context.dataIndex];
-                            return `Moyenne: ${moy.toFixed(1)} absences/cours`;
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre d\'absences'
                         }
                     }
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Nombre d\'absences'
-                    }
-                }
             }
-        }
-    });
+        });
+    }
 </script>
