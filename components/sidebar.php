@@ -124,29 +124,37 @@
             </nav>
         <?php elseif ($role === "Attache"): ?>
             <nav>
-                <ul>
-                    <li class="py-2 px-4 bg-purple-50 hover:bg-purple-100 rounded-3xl">
+                <ul class="flex flex-col gap-1">
+                    <li class="py-2 px-4 <?= $page === 'dashboard' ? 'border-l-4 border-green-500 bg-gray-50 shadow-xl rounded' : 'hover:bg-gray-200 hover:rounded-3xl' ?> ">
                         <a
-                            href="<?= ROOT_URL ?>?controllers=client&page=dashboard"
-                            class="font-medium gap-3 flex items-center">
+                            href="<?= ROOT_URL ?>?controllers=attacher&page=dashboard"
+                            class="font-medium gap-3 flex items-center text-sm">
                             <i class="ri-home-3-line text-lg"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li class="py-2 px-4 hover:bg-purple-100 rounded-3xl">
+                    <li class="py-2 px-4 <?= $page === 'classes' ? 'border-l-4 border-green-500 bg-gray-50 shadow-xl rounded' : 'hover:bg-gray-200 hover:rounded-3xl' ?> ">
                         <a
-                            href="<?= ROOT_URL ?>?controllers=client&page=catalogues"
-                            class="font-medium gap-3 flex items-center">
-                            <i class="ri-nurse-line text-lg"></i>
-                            <span>Catalogues</span>
+                            href="<?= ROOT_URL ?>?controllers=attacher&page=classes"
+                            class="font-medium gap-3 flex items-center text-sm">
+                            <i class="ri-archive-line text-lg"></i>
+                            <span>Classes</span>
                         </a>
                     </li>
-                    <li class="py-2 px-4 hover:bg-purple-100 rounded-3xl">
+                    <li class="py-2 px-4 <?= $page === 'absences' ? 'border-l-4 border-green-500 bg-gray-50 shadow-xl rounded' : 'hover:bg-gray-200 hover:rounded-3xl' ?>">
                         <a
-                            href="<?= ROOT_URL ?>?controllers=client&page=reservations"
-                            class="font-medium gap-3 flex items-center">
-                            <i class="ri-user-line text-lg"></i>
-                            <span>Reservations</span>
+                            href="<?= ROOT_URL ?>?controllers=attacher&page=absences"
+                            class="font-medium gap-3 flex items-center text-sm">
+                            <i class="ri-questionnaire-line text-lg"></i>
+                            <span>Justifications</span>
+                        </a>
+                    </li>
+                    <li class="py-2 px-4 <?= $page === 'justifications' ? 'border-l-4 border-green-500 bg-gray-50 shadow-xl rounded' : 'hover:bg-gray-200 hover:rounded-3xl' ?>">
+                        <a
+                            href="<?= ROOT_URL ?>?controllers=attacher&page=justifications"
+                            class="font-medium gap-3 flex items-center text-sm">
+                            <i class="ri-file-marked-line text-lg"></i>
+                            <span>Absences</span>
                         </a>
                     </li>
                 </ul>

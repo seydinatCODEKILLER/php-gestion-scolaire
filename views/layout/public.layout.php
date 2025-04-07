@@ -22,6 +22,8 @@
             <?php require_once ROOT_PATH . "/components/header.php"; ?>
         <?php elseif ($controllers === "professeur"): ?>
             <?php require_once ROOT_PATH . "/components/headerProf.php"; ?>
+        <?php elseif ($controllers === "attacher"): ?>
+            <?php require_once ROOT_PATH . "/components/headerAtt.php"; ?>
         <?php endif; ?>
         <?= $content ?>
     </div>
