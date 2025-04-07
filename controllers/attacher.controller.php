@@ -18,8 +18,13 @@ switch ($page) {
         $data = handleClassesRequests($idAttache);
         extract($data);
         break;
-    case 'absences':
-        $contenue = "Gestion des absences";
+    case 'etudiants':
+        $contenue = "Gestion des etudiants";
+        $data = handleStudentAttachedData($idAttache);
+        extract($data);
+        $classes = $data["classes"];
+        $etudiants = $data["students"]["data"];
+        $pagination =  $data["students"]["pagination"];
         break;
     case 'justifications':
         $contenue = "Traitement des justifications";

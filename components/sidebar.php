@@ -149,12 +149,12 @@
                             <span>Justifications</span>
                         </a>
                     </li>
-                    <li class="py-2 px-4 <?= $page === 'absences' ? 'border-l-4 border-green-500 bg-gray-50 shadow-xl rounded' : 'hover:bg-gray-200 hover:rounded-3xl' ?>">
+                    <li class="py-2 px-4 <?= $page === 'etudiants' ? 'border-l-4 border-green-500 bg-gray-50 shadow-xl rounded' : 'hover:bg-gray-200 hover:rounded-3xl' ?>">
                         <a
-                            href="<?= ROOT_URL ?>?controllers=attacher&page=absences"
+                            href="<?= ROOT_URL ?>?controllers=attacher&page=etudiants"
                             class="font-medium gap-3 flex items-center text-sm">
                             <i class="ri-file-marked-line text-lg"></i>
-                            <span>Absences</span>
+                            <span>Etudiants</span>
                         </a>
                     </li>
                 </ul>

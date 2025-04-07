@@ -48,9 +48,6 @@ function handleJustificationGetData(int $idAttache)
     return $data;
 }
 
-/**
- * Récupère les détails d'une classe spécifique
- */
 function getClasseDetailsAttacher(int $idClasse): ?array
 {
 
@@ -75,11 +72,6 @@ function getClasseDetailsAttacher(int $idClasse): ?array
     ];
 }
 
-/**
- * Récupère les données pour le tableau de bord de l'Attaché
- * @param int $idAttache - ID de l'utilisateur attaché
- * @return array - Données structurées pour le dashboard
- */
 function getDashboardDataAttacher(int $idAttache): array
 {
     return [
@@ -89,7 +81,6 @@ function getDashboardDataAttacher(int $idAttache): array
         'recentAbsences' => getDernieresAbsencesByAttache($idAttache)
     ];
 }
-
 
 function handleJustificationRequests(): void
 {
@@ -124,4 +115,22 @@ function handleJustificationRequests(): void
             return;
         }
     }
+}
+
+function handleStudentAttachedData(int $idAttache): array
+{
+    $data = [
+        'filtered' => [
+            'id_classe' => $_GET["id_classe"] ?? "",
+            'statut' => $_GET["statut"] ?? ''
+        ],
+        'classes' => getClassesByAttache($idAttache)
+    ];
+    $data["students"] = getEtudiantsByAttache($idAttache, $data["filtered"]);
+
+    if (isset($_GET["details_student"])) {
+        $idEtudiant = $_GET["details_student"];
+        $data["details"] = getAbsencesByEtudiant($idEtudiant);
+    }
+    return $data;
 }
