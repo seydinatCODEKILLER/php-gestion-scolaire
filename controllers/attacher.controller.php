@@ -2,6 +2,7 @@
 isUserLoggedIn();
 require_once ROOT_PATH . "/helpers/controllerAttHelpers.php";
 
+
 define("PATH_VIEW_ATTACHE", "/views/pages/attacher/");
 $controller = initController();
 extract($controller);
@@ -16,16 +17,18 @@ switch ($page) {
         $contenue = "Gestion des classes";
         $data = handleClassesRequests($idAttache);
         extract($data);
-        // dumpDie($data);
         break;
     case 'absences':
         $contenue = "Gestion des absences";
         break;
-
     case 'justifications':
         $contenue = "Traitement des justifications";
+        $data = handleJustificationGetData($idAttache);
+        handleJustificationRequests();
+        extract($data);
+        $justifications = $data["justifications"]["data"];
+        $paginations = $data["justifications"]["pagination"];
         break;
-
     default:
         redirectURL("notFound", "error");
         break;

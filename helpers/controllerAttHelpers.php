@@ -1,7 +1,7 @@
 <?php
 
 require_once ROOT_PATH . "/models/attacher.model.php";
-
+require_once ROOT_PATH . "/models/justification.model.php";
 
 function initController()
 {
@@ -32,6 +32,19 @@ function handleClassesRequests(int $idAttache): array
         $data['details'] = getClasseDetailsAttacher($_GET['details_classe_id']);
     }
     $data['classes'] = getClassesWithStats($idAttache, $data['filtered']);
+    return $data;
+}
+
+function handleJustificationGetData(int $idAttache)
+{
+    $data = [
+        'filtered' => [
+            'date_debut' => !empty($_GET['date_debut']) ? (new DateTime($_GET['date_debut']))->format('Y/m/d') : '',
+            'date_fin' => !empty($_GET['date_fin']) ? (new DateTime($_GET['date_fin']))->format('Y/m/d') : '',
+            'statut' => $_GET["statut"] ?? ''
+        ],
+    ];
+    $data['justifications'] = getJustificationsByAttache($idAttache, $data["filtered"]);
     return $data;
 }
 
@@ -75,4 +88,40 @@ function getDashboardDataAttacher(int $idAttache): array
         'justifications_en_attente' => countJustificationsEnAttenteByAttache($idAttache) ?? 0,
         'recentAbsences' => getDernieresAbsencesByAttache($idAttache)
     ];
+}
+
+
+function handleJustificationRequests(): void
+{
+    $actions = [
+        'justification_accepted_id' => [
+            'statut' => 'acceptée',
+            'success_message' => 'Justification validée avec succès',
+            'error_message' => 'Échec de la validation de la justification'
+        ],
+        'justification_denied_id' => [
+            'statut' => 'refusée',
+            'success_message' => 'Justification refusée avec succès',
+            'error_message' => 'Échec du refus de la justification'
+        ],
+        'cancel_justification_id' => [
+            'statut' => 'en attente',
+            'success_message' => 'Justification remise en attente',
+            'error_message' => 'Échec de l\'annulation de la justification'
+        ]
+    ];
+
+    foreach ($actions as $param => $config) {
+        if (isset($_GET[$param])) {
+            $idJustification = $_GET[$param];
+            $successful = updateJustificationStatut($idJustification, $config['statut']);
+            if ($successful) {
+                setSuccess($config['success_message']);
+            } else {
+                setFieldError("general", $config['error_message']);
+            }
+            redirectURL("attacher", "justifications");
+            return;
+        }
+    }
 }
