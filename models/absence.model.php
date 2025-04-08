@@ -28,63 +28,6 @@ function getCoursEffectuesParProfesseur(int $idProfesseur): array
     return fetchResult($sql, [$idProfesseur]);
 }
 
-// function getEtudiantsPourAbsences(int $idCours): array
-// {
-//     $sql = "SELECT e.id_etudiant, e.matricule, 
-//                    u.nom, u.prenom, u.avatar,
-//                    cl.libelle as classe,
-//                    IF(a.id_absence IS NULL, 0, 1) as absent
-//             FROM cours_classes cc
-//             JOIN inscriptions i ON cc.id_classe = i.id_classe
-//             JOIN etudiants e ON i.id_etudiant = e.id_etudiant
-//             JOIN utilisateurs u ON e.id_utilisateur = u.id_utilisateur
-//             JOIN classes cl ON cc.id_classe = cl.id_classe
-//             LEFT JOIN absences a ON (a.id_etudiant = e.id_etudiant AND a.id_cours = cc.id_cours)
-//             WHERE cc.id_cours = ?
-//             ORDER BY u.nom, u.prenom";
-//     return fetchResult($sql, [$idCours]);
-// }
-
-// function enregistrerAbsencesSimplifie(int $idCours, array $absentsIds): bool
-// {
-//     // 1. Suppression des anciennes absences
-//     $deleteSql = "DELETE FROM absences WHERE id_cours = ?";
-//     executeQuery($deleteSql, [$idCours]);
-
-//     // 2. Insertion des nouvelles absences
-//     if (!empty($absentsIds)) {
-//         $insertSql = "INSERT INTO absences (id_etudiant, id_cours, date_absence, id_marqueur)
-//                      VALUES (?, ?, CURDATE(), ?)";
-//         foreach ($absentsIds as $idEtudiant) {
-//             executeQuery($insertSql, [$idEtudiant, $idCours, $_SESSION['user']['id_utilisateur']]);
-//         }
-//     }
-//     return true;
-// }
-
-// function enregistrerAbsences(int $coursId, array $absentsIds): bool
-// {
-//     // 1. Suppression des anciennes absences
-//     $deleteSql = "DELETE FROM absences WHERE id_cours = ?";
-//     $deleted = executeQuery($deleteSql, [$coursId]);
-
-//     if (!$deleted) return false;
-
-//     // 2. Insertion des nouvelles absences
-//     if (!empty($absentsIds)) {
-//         $profId = getDataFromSession("user", "id_utilisateur");
-//         $insertSql = "INSERT INTO absences (id_etudiant, id_cours, date_absence, id_marqueur) 
-//                       VALUES (?, ?, CURDATE(), ?)";
-
-//         foreach ($absentsIds as $idEtudiant) {
-//             $inserted = executeQuery($insertSql, [$idEtudiant, $coursId, $profId]);
-//             if (!$inserted) return false;
-//         }
-//     }
-
-//     return true;
-// }
-
 function getEtudiantsPourAbsences(int $coursId): array
 {
     $sql = "SELECT e.id_etudiant, e.matricule, 

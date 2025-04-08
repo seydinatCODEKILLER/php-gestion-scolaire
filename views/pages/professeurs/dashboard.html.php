@@ -1,13 +1,13 @@
 <div class="px-3 mt-5">
     <!-- Cartes de statistiques -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <!-- Carte 1 : Nombre total de cours -->
         <div class="p-3 rounded bg-white shadow-sm flex flex-col gap-2 relative transition-transform duration-300 hover:scale-105 cursor-pointer">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded bg-blue-50 flex justify-center items-center cursor-pointer">
                     <i class="ri-book-line text-blue-500 font-medium"></i>
                 </div>
-                <p class="text-blue-500 font-medium text-lg">Cours planifiés</p>
+                <p class="text-blue-500 font-medium text-lg">Cours Total</p>
             </div>
             <div>
                 <p class="font-medium text-5xl"><?= $stats['nb_cours'] ?? 0 ?></p>
@@ -40,20 +40,6 @@
             <div>
                 <p class="font-medium text-5xl"><?= $stats['taux_absence'] ?? 0 ?>%</p>
                 <span class="text-gray-400 font-medium">Par cours</span>
-            </div>
-        </div>
-
-        <!-- Nouvelle Carte 4 : Top absentéisme -->
-        <div class="p-3 rounded bg-white shadow-sm flex flex-col gap-2 relative transition-transform duration-300 hover:scale-105 cursor-pointer">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded bg-red-50 flex justify-center items-center cursor-pointer">
-                    <i class="ri-alarm-warning-line text-red-500 font-medium"></i>
-                </div>
-                <p class="text-red-500 font-medium text-lg">Top absentéisme</p>
-            </div>
-            <div>
-                <p class="font-medium text-5xl"><?= count($top_absents ?? []) ?></p>
-                <span class="text-gray-400 font-medium">Étudiants à suivre</span>
             </div>
         </div>
     </div>
@@ -96,7 +82,6 @@
 </div>
 
 <script>
-    // Graphique en courbe pour les absences par module
     const absencesCtx = document.getElementById('absencesChart')?.getContext('2d');
     if (absencesCtx) {
         new Chart(absencesCtx, {

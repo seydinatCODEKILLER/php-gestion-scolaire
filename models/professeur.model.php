@@ -391,3 +391,45 @@ function getRecentAbsences(int $profId, int $limit = 5): array
 
     return fetchResult($sql, [$profId, $limit]);
 }
+
+function getIdProfesseurByIdUtilisateur(int $idUtilisateur): ?int
+{
+    $sql = "SELECT id_professeur FROM professeurs WHERE id_utilisateur = ?";
+    $result = fetchResult($sql, [$idUtilisateur], false);
+    return $result ? (int) $result['id_professeur'] : null;
+}
+
+function getCoursDeLaSemaineParProfesseur(int $idProf): array
+{
+    $startOfWeek = date('Y-m-d', strtotime('monday this week'));
+    $endOfWeek = date('Y-m-d', strtotime('sunday this week'));
+
+    $sql = "SELECT c.*, m.libelle as module_libelle,
+            GROUP_CONCAT(cl.libelle SEPARATOR ', ') as classes_list
+            FROM cours c
+            JOIN modules m ON c.id_module = m.id_module
+            JOIN cours_classes cc ON c.id_cours = cc.id_cours
+            JOIN classes cl ON cc.id_classe = cl.id_classe
+            WHERE c.id_professeur = ?
+            AND c.date_cours BETWEEN ? AND ?
+            GROUP BY c.id_cours
+            ORDER BY c.date_cours, c.heure_debut";
+
+    return fetchResult($sql, [$idProf, $startOfWeek, $endOfWeek]);
+}
+
+function getCoursDuJourParProfesseur(int $idProf): array
+{
+    $today = date('Y-m-d');
+
+    $sql = "SELECT c.*, m.libelle as module_libelle,
+            GROUP_CONCAT(cl.libelle SEPARATOR ', ') as classes_list
+            FROM cours c
+            JOIN modules m ON c.id_module = m.id_module
+            JOIN cours_classes cc ON c.id_cours = cc.id_cours
+            JOIN classes cl ON cc.id_classe = cl.id_classe
+            WHERE c.id_professeur = ? AND c.date_cours = ?
+            GROUP BY c.id_cours";
+
+    return fetchResult($sql, [$idProf, $today]);
+}

@@ -1,6 +1,6 @@
 <div
     id="sidebar"
-    class="flex flex-col justify-between p-3 fixed left-0 shadow-md h-full text-gray-900 w-64 lg:w-52 md:flex transform transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0 z-50">
+    class="flex flex-col justify-between p-3 fixed left-0 shadow-md h-full bg-gray-50 text-gray-900 w-64 lg:w-52 md:flex transform transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0 z-50">
     <div class="flex flex-col gap-6">
         <div class="flex justify-between">
             <div class="flex items-center gap-2 text-md">
@@ -163,7 +163,7 @@
     </div>
     <a href="<?= ROOT_URL ?>?controllers=security&page=deconnexion">
         <button
-            class="px-2 py-2 rounded-3xl border boder-gray-200 font-medium shadow-xl w-full">
+            class="px-2 py-2 bg-white rounded-3xl border boder-gray-200 font-medium shadow-xl w-full">
             <i class="ri-logout-box-r-line font-medium"></i>
             <span>Deconnexion</span>
         </button>

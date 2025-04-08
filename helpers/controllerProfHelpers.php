@@ -11,6 +11,7 @@ function initController(): array
         'page' => $_GET['page'] ?? 'dashboard',
         'controllers' => $_GET["controllers"],
         'userId' => getDataFromSession("user", "id_utilisateur"),
+        'idProf' => getIdProfesseurByIdUtilisateur(getDataFromSession("user", "id_utilisateur")),
         'role' => getDataFromSession("user", "libelle"),
         'contenue' => '',
         'message' => getSuccess(),
@@ -32,12 +33,10 @@ function handleCoursRequests(int $profId): array
         'classes' => getClassesByProfesseur($profId)
     ];
 
-    // Gestion des actions CRUD
     if (isset($_GET['details_cours_id'])) {
         $data['details'] = getCoursDetails($_GET['details_cours_id']);
     }
 
-    // Récupération des cours avec pagination
     $result = getCoursByProfesseurs(
         $profId,
         $data['filtered'],
@@ -58,10 +57,17 @@ function handleAbsencesRequests(int $profId): array
             'module' => $_GET['module'] ?? '',
             'date' => $_GET['date'] ?? ''
         ],
-        'coursEffectues' => [],
+        'coursDuJour' => [],
+        'coursDeLaSemaine' => [],
         'modules' => getAllModules(),
         'etudiantsCours' => [],
     ];
+
+    // Récupérer les cours du jour
+    $data['coursDuJour'] = getCoursDuJourParProfesseur($profId);
+
+    // Récupérer les cours de la semaine
+    $data['coursDeLaSemaine'] = getCoursDeLaSemaineParProfesseur($profId);
 
     // Marquage des absences
     if (isset($_GET['marquer_absences'])) {
@@ -73,11 +79,19 @@ function handleAbsencesRequests(int $profId): array
         }
     }
 
-    // Liste des cours pour marquage
-    $data['coursEffectues'] = getCoursEffectuesParProfesseur($profId);
-
     return $data;
 }
+
+function isMarquageDisponible(string $dateCours, string $heureDebut): bool
+{
+    $datetimeCours = new DateTime("$dateCours $heureDebut");
+    $now = new DateTime();
+    $diff = $now->diff($datetimeCours);
+    $hoursDiff = ($now > $datetimeCours) ? $diff->h + ($diff->days * 24) : - ($diff->h + $diff->days * 24);
+
+    return $hoursDiff <= 24 && $hoursDiff >= 0;
+}
+
 
 function handleAbsencesSubmission(int $coursId, array $absentsIds): void
 {
@@ -93,8 +107,8 @@ function getDashboardData(int $profId): array
 {
     return [
         'stats' => getProfesseurStats($profId),
-        'prochainCours' => getProchainCours($profId),
+        'absences_par_module' => getAbsencesByModule($profId),
         'absencesRecent' => getRecentAbsences($profId, 5),
-        'top_absents' => getTopAbsentStudents($profId, 5)
+        'top_absents' => getTopAbsentStudents($profId, 5),
     ];
 }

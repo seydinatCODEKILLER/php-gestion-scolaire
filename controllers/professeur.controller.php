@@ -9,21 +9,20 @@ extract($controller);
 switch ($page) {
     case 'dashboard':
         $contenue = "Tableau de bord";
-        $data = getDashboardData($userId);
+        $data = getDashboardData($idProf);
         extract($data);
         break;
 
     case 'cours':
         $contenue = "Mes cours";
-        $crudData = handleCoursRequests($userId);
+        $crudData = handleCoursRequests($idProf);
         extract($crudData);
         break;
 
     case 'absences':
         $contenue = "Gestion des absences";
-        $crudData = handleAbsencesRequests($userId);
+        $crudData = handleAbsencesRequests($idProf);
         extract($crudData);
-        // dumpDie($crudData);
         break;
 
     default:

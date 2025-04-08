@@ -1,111 +1,166 @@
-<div class="px-3 flex justify-between items-center mt-4">
-    <!-- Alertes -->
-    <div class="fixed top-5 right-5 space-y-4 transition transform duration-300 opacity-0 translate-y-2" id="alerter">
+<div class="px-4 py-6">
+    <!-- Alertes animées -->
+    <div class="fixed top-5 right-5 space-y-4 z-50">
         <?php if (getFieldError("general")): ?>
-            <div role="alert" class="alert alert-error w-96 text-white">
+            <div role="alert" class="alert alert-error shadow-lg transform transition-all duration-300 animate-bounce-in" id="error-alert">
                 <i class="ri-error-warning-line"></i>
                 <span><?= getFieldError("general") ?></span>
             </div>
         <?php endif; ?>
 
         <?php if ($message): ?>
-            <div role="alert" class="alert alert-success w-96 text-white">
+            <div role="alert" class="alert alert-success shadow-lg transform transition-all duration-300 animate-bounce-in" id="success-alert">
                 <i class="ri-checkbox-circle-fill"></i>
                 <span><?= $message ?></span>
             </div>
         <?php endif; ?>
     </div>
 
-    <!-- Titre -->
-    <div class="hidden lg:flex items-center gap-2">
-        <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center">
-            <img src="assets/absent.png" alt="Icône absences" class="object-cover">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <!-- Section Cours du Jour - Cartes animées -->
+        <div class="lg:col-span-2">
+            <?php if (!empty($coursDuJour)): ?>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2">
+                    <?php foreach ($coursDuJour as $cours): ?>
+                        <div class="p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-l-4 
+                        <?= $cours['statut'] === 'effectué' ? 'border-green-500' : '' ?>
+                        <?= $cours['statut'] === 'annulé' ? 'border-orange-500' : '' ?>
+                        <?= $cours['statut'] === 'planifié' ? 'border-blue-500' : '' ?> rounded">
+                            <div class="">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="card-title text-lg font-bold text-gray-800">
+                                        <?= $cours['module_libelle'] ?>
+                                    </h3>
+                                    <span class="badge badge-soft 
+                                    <?= $cours['statut'] === 'effectué' ? 'badge-success' : '' ?>
+                                    <?= $cours['statut'] === 'annulé' ? 'badge-warning' : '' ?>
+                                    <?= $cours['statut'] === 'planifié' ? 'badge-info' : '' ?>">
+                                        <?= $cours['statut'] ?>
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center gap-2 text-gray-600 mb-2">
+                                    <i class="ri-time-line"></i>
+                                    <span>
+                                        <?= substr($cours['heure_debut'], 0, 5) ?> - <?= substr($cours['heure_fin'], 0, 5) ?>
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center gap-2 text-gray-600 mb-4">
+                                    <i class="ri-group-line"></i>
+                                    <span><?= $cours['classes_list'] ?></span>
+                                </div>
+
+                                <div class="flex justify-end">
+                                    <?php if (isMarquageDisponible($cours['date_cours'], $cours['heure_debut'])) : ?>
+                                        <a href="?controllers=professeur&page=absences&marquer_absences=<?= $cours['id_cours'] ?>"
+                                            class="btn btn-primary btn-sm">
+                                            <i class="ri-user-unfollow-line mr-1"></i> Marquer absences
+                                        </a>
+                                    <?php else : ?>
+                                        <button class="btn btn-primary btn-sm cursor-not-allowed" disabled>
+                                            <i class="ri-user-unfollow-line mr-1"></i> Marquer absences
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="bg-white rounded-xl p-6 text-center shadow-sm flex justify-center items-center flex-col gap-2">
+                    <img src="assets/recherche.png" alt="" class="object-cover">
+                    <h3 class="text-sm font-medium text-gray-500">Aucun cours prévu aujourd'hui</h3>
+                </div>
+            <?php endif; ?>
         </div>
-        <div class="flex flex-col gap-1">
-            <h1 class="font-medium text-2xl">Gestion des absences</h1>
-            <p class="text-gray-400 w-96 text-sm font-medium">
-                Marquez et consultez les absences pour vos cours
-            </p>
+        <div class="w-full">
+            <calendar-date class="cally bg-base-100 border border-base-300 shadow-lg rounded-box w-full">
+                <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path>
+                </svg>
+                <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path>
+                </svg>
+                <calendar-month></calendar-month>
+            </calendar-date>
+        </div>
+    </div>
+
+    <!-- Section Cours de la Semaine - Tableau moderne -->
+    <div class="mt-5">
+        <h2 class="text-xl font-medium mb-3 text-gray-700 flex items-center gap-2">
+            <i class="ri-calendar-2-line"></i> Emploi du temps de la semaine
+        </h2>
+
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Heure</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classes</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <?php foreach ($coursDeLaSemaine as $cours): ?>
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        <?= date('d/m/Y', strtotime($cours['date_cours'])) ?>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                        <?= substr($cours['heure_debut'], 0, 5) ?> - <?= substr($cours['heure_fin'], 0, 5) ?>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        <?= $cours['module_libelle'] ?>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex flex-wrap gap-1">
+                                        <?php foreach (explode(', ', $cours['classes_list']) as $classe): ?>
+                                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">
+                                                <?= $classe ?>
+                                            </span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium 
+                                        <?= $cours['statut'] === 'effectué' ? 'bg-green-100 text-green-800' : '' ?>
+                                        <?= $cours['statut'] === 'annulé' ? 'bg-orange-100 text-orange-800' : '' ?>
+                                        <?= $cours['statut'] === 'planifié' ? 'bg-blue-100 text-blue-800' : '' ?>">
+                                        <?= $cours['statut'] ?>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <?php if (isMarquageDisponible($cours['date_cours'], $cours['heure_debut'])) : ?>
+                                        <a href="?controllers=professeur&page=absences&marquer_absences=<?= $cours['id_cours'] ?>"
+                                            class="btn btn-primary btn-xs">
+                                            <i class="ri-user-unfollow-line mr-1"></i> Marquer
+                                        </a>
+                                    <?php else : ?>
+                                        <button class="btn btn-primary btn-xs disabled" disabled>
+                                            <i class="ri-user-unfollow-line mr-1"></i> Marquer
+                                        </button>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-
-<!-- Filtres -->
-<div class="bg-white p-4 rounded-lg shadow-sm mt-2">
-    <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-2">
-        <input type="hidden" name="controllers" value="professeur">
-        <input type="hidden" name="page" value="absences">
-
-        <div class="form-control">
-            <label class="label">Module</label>
-            <select name="module" class="select select-bordered">
-                <option value="">Tous les modules</option>
-                <?php foreach ($modules as $module): ?>
-                    <option value="<?= $module['id_module'] ?>"
-                        <?= ($filtered['module'] ?? '') == $module['id_module'] ? 'selected' : '' ?>>
-                        <?= $module['libelle'] ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <div class="form-control flex flex-col">
-            <label class="label">Date</label>
-            <input type="date" name="date" class="input input-bordered" value="<?= $filtered['date'] ?? '' ?>">
-        </div>
-
-        <div class="form-control md:col-span-3">
-            <button type="submit" class="btn btn-primary">Filtrer</button>
-            <a href="?controllers=professeur&page=absences" class="btn btn-ghost">Réinitialiser</a>
-        </div>
-    </form>
-</div>
-
-<!-- Liste des cours -->
-<div class="px-3 mt-6">
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Heure</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Module</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Classes</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                <?php foreach ($coursEffectues as $cours): ?>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-2 whitespace-nowrap"><?= date('d/m/Y', strtotime($cours['date_cours'])) ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap">
-                            <?= substr($cours['heure_debut'], 0, 5) ?> - <?= substr($cours['heure_fin'], 0, 5) ?>
-                        </td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $cours['module_libelle'] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $cours['classes_list'] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap">
-                            <?php if ($cours['statut'] === "effectué"): ?>
-                                <span class="badge badge-soft badge-primary"><?= $cours['statut'] ?></span>
-                            <?php elseif ($cours['statut'] === "annulé"): ?>
-                                <span class="badge badge-soft badge-warning"><?= $cours['statut'] ?></span>
-                            <?php elseif ($cours['statut'] === "planifié"): ?>
-                                <span class="badge badge-soft badge-success"><?= $cours['statut'] ?></span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="px-6 py-2 whitespace-nowrap text-right">
-                            <a href="?controllers=professeur&page=absences&marquer_absences=<?= $cours['id_cours'] ?>"
-                                class="btn btn-sm btn-primary">
-                                <i class="ri-user-unfollow-line"></i> Marquer
-                            </a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
-
 
 <!-- Modal pour marquer les absences -->
 <dialog id="marquerAbsencesModal" class="modal <?= isset($_GET['marquer_absences']) ? 'modal-open' : '' ?>">
@@ -200,14 +255,3 @@
         <?php endif; ?>
     </div>
 </dialog>
-
-<script>
-    // Gestion des alertes
-    setTimeout(() => {
-        const alerter = document.getElementById('alerter');
-        if (alerter) {
-            alerter.classList.remove('opacity-0', 'translate-y-2');
-            alerter.classList.add('opacity-100', 'translate-y-0');
-        }
-    }, 100);
-</script>
