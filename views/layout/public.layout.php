@@ -17,14 +17,14 @@
 </head>
 
 <body class="flex items-center h-screen">
-    <?php require_once ROOT_PATH . "/components/sidebar.php"; ?>
+    <?php require_once ROOT_PATH . "/components/sidebar/sidebar.php"; ?>
     <div class="w-full flex flex-col lg:ml-56 h-full">
         <?php if ($controllers === "responsable"): ?>
-            <?php require_once ROOT_PATH . "/components/header.php"; ?>
+            <?php require_once ROOT_PATH . "/components/header/header.php"; ?>
         <?php elseif ($controllers === "professeur"): ?>
-            <?php require_once ROOT_PATH . "/components/headerProf.php"; ?>
+            <?php require_once ROOT_PATH . "/components/header/headerProf.php"; ?>
         <?php elseif ($controllers === "attacher"): ?>
-            <?php require_once ROOT_PATH . "/components/headerAtt.php"; ?>
+            <?php require_once ROOT_PATH . "/components/header/headerAtt.php"; ?>
         <?php endif; ?>
         <?= $content ?>
     </div>
