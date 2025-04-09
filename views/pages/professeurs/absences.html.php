@@ -88,7 +88,7 @@
     </div>
 
     <!-- Section Cours de la Semaine - Tableau moderne -->
-    <div class="mt-5">
+    <div class="mt-5 bg-white p-2">
         <h2 class="text-xl font-medium mb-3 text-gray-700 flex items-center gap-2">
             <i class="ri-calendar-2-line"></i> Emploi du temps de la semaine
         </h2>

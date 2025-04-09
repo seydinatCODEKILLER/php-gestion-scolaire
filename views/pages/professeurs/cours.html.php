@@ -14,18 +14,6 @@
             </div>
         <?php endif; ?>
     </div>
-
-    <div class="hidden lg:flex items-center gap-2">
-        <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center">
-            <img src="assets/cours.png" alt="" class="object-cover">
-        </div>
-        <div class="flex flex-col gap-1">
-            <h1 class="font-medium text-2xl">Mes cours</h1>
-            <p class="text-gray-400 w-96 text-sm font-medium">
-                Consultez et gérez vos cours planifiés
-            </p>
-        </div>
-    </div>
 </div>
 
 <!-- Filtres -->
@@ -78,7 +66,7 @@
 </div>
 
 <!-- Liste des cours -->
-<div class="px-3 mt-6">
+<div class="px-3 mt-6 bg-white p-2">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -236,10 +224,3 @@
         </div>
     </div>
 </dialog>
-
-<script>
-    // Initialisation des modales
-    if (document.getElementById('detailsCoursModal') && <?= isset($details) ? 'true' : 'false' ?>) {
-        document.getElementById('detailsCoursModal').showModal();
-    }
-</script>

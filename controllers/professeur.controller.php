@@ -33,4 +33,4 @@ switch ($page) {
 ob_start();
 require_once ROOT_PATH . PATH_VIEW_PROF . ($page === 'dashboard' ? 'dashboard.html.php' : "{$page}.html.php");
 $content = ob_get_clean();
-require_once ROOT_PATH . "/views/layout/public.layout.php";
+require_once ROOT_PATH . "/views/layout/professeur.layout.php";
