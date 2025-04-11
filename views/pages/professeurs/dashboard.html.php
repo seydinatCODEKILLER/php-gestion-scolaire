@@ -1,4 +1,12 @@
 <div class="px-3 mt-5">
+    <div class="fixed top-5 right-5 space-y-4 transition transform duration-300 opacity-0 translate-y-2" id="alerter">
+        <?php if ($message): ?>
+            <div role="alert" class="alert alert-success w-96 text-white">
+                <i class="ri-checkbox-circle-fill"></i>
+                <span><?= $message ?></span>
+            </div>
+        <?php endif; ?>
+    </div>
     <!-- Cartes de statistiques -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <!-- Carte 1 : Nombre total de cours -->
