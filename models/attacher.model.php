@@ -415,7 +415,6 @@ function reinscrireEtudiant(int $idEtudiant, int $idClasse, string $anneeScolair
             return false;
         }
     }
-
     return true;
 }
 
@@ -435,7 +434,7 @@ function updateExistingInscription(int $idInscription, int $idClasse, bool $isRe
         "UPDATE inscriptions SET 
          id_classe = ?, 
          redoublement = ?,
-         statut = 1,
+         statut = 'validée',
          date_inscription = NOW()
          WHERE id_inscription = ?",
         [$idClasse, $isRedoublement ? 1 : 0, $idInscription]
@@ -446,7 +445,6 @@ function updateExistingInscription(int $idInscription, int $idClasse, bool $isRe
 
 function createNewInscription(int $idEtudiant, int $idClasse, string $anneeScolaire, bool $isRedoublement): bool
 {
-    // Désactiver les anciennes inscriptions
     executeQuery(
         "UPDATE inscriptions SET statut = 'validée'
          WHERE id_etudiant = ?",
