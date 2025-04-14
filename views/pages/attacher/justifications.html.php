@@ -83,52 +83,65 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-                <?php foreach ($justifications as $j): ?>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $j["nom"] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $j["prenom"] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $j["classe"] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $j["libelle"] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= date('d/m/Y', strtotime($j['date_justification'])) ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= date('d/m/Y', strtotime($j['date_absence'])) ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap">
-                            <?php if ($j['statut'] == 'en attente'): ?>
-                                <span class="badge badge-soft badge-neutral"><?= $j['statut'] ?></span>
-                            <?php elseif ($j['statut'] == 'acceptée'): ?>
-                                <span class="badge badge-soft badge-success"><?= $j['statut'] ?></span>
-                            <?php else: ?>
-                                <span class="badge badge-soft badge-warning"><?= $j['statut'] ?></span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="px-6 py-2 whitespace-nowrap text-right">
-                            <div class="dropdown dropdown-end">
-                                <button tabindex="0" class="btn btn-ghost btn-sm">
-                                    <i class="ri-more-2-fill"></i>
-                                </button>
-                                <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-white rounded-box w-52">
-                                    <?php if ($j['statut'] == 'en attente'): ?>
-                                        <li>
-                                            <a href="?controllers=attacher&page=justifications&justification_accepted=<?= $j['id_justification'] ?>">
-                                                <i class="ri-checkbox-circle-line"></i> Acceptée
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="?controllers=attacher&page=justifications&justification_denied=<?= $j['id_justification'] ?>">
-                                                <i class="ri-close-line"></i> Refusée
-                                            </a>
-                                        </li>
-                                    <?php else: ?>
-                                        <li>
-                                            <a href="?controllers=attacher&page=justifications&confirm_cancel=<?= $j['id_justification'] ?>">
-                                                <i class="ri-close-circle-line"></i> Annuler
-                                            </a>
-                                        </li>
-                                    <?php endif; ?>
-                                </ul>
+                <?php if (!empty($justifications)):  ?>
+                    <?php foreach ($justifications as $j): ?>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-2 whitespace-nowrap"><?= $j["nom"] ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= $j["prenom"] ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= $j["classe"] ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= $j["libelle"] ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= date('d/m/Y', strtotime($j['date_justification'])) ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= date('d/m/Y', strtotime($j['date_absence'])) ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap">
+                                <?php if ($j['statut'] == 'en attente'): ?>
+                                    <span class="badge badge-soft badge-neutral"><?= $j['statut'] ?></span>
+                                <?php elseif ($j['statut'] == 'acceptée'): ?>
+                                    <span class="badge badge-soft badge-success"><?= $j['statut'] ?></span>
+                                <?php else: ?>
+                                    <span class="badge badge-soft badge-warning"><?= $j['statut'] ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-6 py-2 whitespace-nowrap text-right">
+                                <div class="dropdown dropdown-end">
+                                    <button tabindex="0" class="btn btn-ghost btn-sm">
+                                        <i class="ri-more-2-fill"></i>
+                                    </button>
+                                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-white rounded-box w-52">
+                                        <?php if ($j['statut'] == 'en attente'): ?>
+                                            <li>
+                                                <a href="?controllers=attacher&page=justifications&justification_accepted=<?= $j['id_justification'] ?>">
+                                                    <i class="ri-checkbox-circle-line"></i> Acceptée
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="?controllers=attacher&page=justifications&justification_denied=<?= $j['id_justification'] ?>">
+                                                    <i class="ri-close-line"></i> Refusée
+                                                </a>
+                                            </li>
+                                        <?php else: ?>
+                                            <li>
+                                                <a href="?controllers=attacher&page=justifications&confirm_cancel=<?= $j['id_justification'] ?>">
+                                                    <i class="ri-close-circle-line"></i> Annuler
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="8" class="px-6 py-4 text-center">
+                            <div class="flex flex-col items-center justify-center gap-4">
+                                <img src="assets/recherche.png" alt="Aucun étudiant" class="">
+                                <div class="text-gray-500 text-sm font-medium">
+                                    Aucune justifications pour le moment
+                                </div>
                             </div>
                         </td>
                     </tr>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
         <?= renderPagination($paginations, array_merge(['controllers' => 'attacher', 'page' => 'justifications'])) ?>

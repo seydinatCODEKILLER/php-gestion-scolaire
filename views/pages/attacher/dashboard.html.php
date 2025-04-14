@@ -52,7 +52,6 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         <!-- Dernières absences -->
         <div class="overflow-x-auto bg-white p-2 rounded">
-            <h1 class="text-gray-400 font-medium text-lg">Les absences les plus recentes</h1>
             <table class="min-w-full divide-y divide-gray-200 mt-4">
                 <thead class="bg-gray-50">
                     <tr>
@@ -77,7 +76,16 @@
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <img src="assets/recherche.png" alt="" class="object-cover mx-auto">
+                        <tr>
+                            <td colspan="5" class="px-6 text-center">
+                                <div class="flex flex-col items-center justify-center gap-4">
+                                    <img src="assets/recherche.png" alt="Aucun étudiant" class="">
+                                    <div class="text-gray-500 text-sm font-medium">
+                                        Les absences recentes
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                     <?php endif; ?>
                 </tbody>
             </table>

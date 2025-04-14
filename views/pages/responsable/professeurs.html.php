@@ -124,9 +124,7 @@
                             </div>
                         <?php endif; ?>
                         <p class="text-red-500"><?= getFieldError('avatar') ?? "" ?></p>
-
                     </div>
-
                     <!-- Remplacer le select multiple par des checkboxes -->
                     <div class="form-control">
                         <label class="label font-medium">Classes affectées</label>
@@ -148,7 +146,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="modal-action">
                 <a href="<?= ROOT_URL ?>?controllers=responsable&page=professeurs" class="btn btn-ghost">Annuler</a>
                 <button type="submit" class="btn btn-primary">Enregistrer</button>

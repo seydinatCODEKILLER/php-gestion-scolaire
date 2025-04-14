@@ -52,7 +52,6 @@ function getDernieresAbsencesByAttache(int $idAttache, int $limit = 5): array
     return fetchResult($sql, [$idAttache, $limit]);
 }
 
-
 function getIdAttacheByIdUtilisateur(int $idUtilisateur): ?int
 {
     $sql = "SELECT id_attache FROM attaches WHERE id_utilisateur = ?";
@@ -60,9 +59,7 @@ function getIdAttacheByIdUtilisateur(int $idUtilisateur): ?int
     return $result ? (int) $result['id_attache'] : null;
 }
 
-/**
- * Récupère les classes avec leurs statistiques
- */
+
 function getClassesWithStats(int $idAttache, array $filters = []): array
 {
     $sql = "SELECT c.id_classe, c.libelle, c.annee_scolaire,
@@ -202,10 +199,265 @@ function getAbsencesByEtudiant(int $idEtudiant, array $filters = [], int $page =
 
 function getClassesByAttache(int $idAttache): array
 {
-    $sql = "SELECT c.id_classe, c.libelle, c.annee_scolaire, c.capacite_max, c.state
+    $sql = "SELECT c.id_classe, f.libelle filiere, c.libelle, c.annee_scolaire, c.capacite_max, c.state
             FROM classes c
             JOIN classes_attaches ca ON c.id_classe = ca.id_classe
+            JOIN filieres f ON f.id_filiere = c.id_filiere
             WHERE ca.id_attache = ?";
     $params = [$idAttache];
     return fetchResult($sql, $params);
+}
+
+function getEtudiantsInscrits(int $idAttache, array $filters): array
+{
+    $sql = "SELECT e.id_etudiant, e.matricule, u.nom, u.prenom, 
+            c.libelle as classe, i.annee_scolaire, i.date_inscription
+            FROM etudiants e
+            JOIN utilisateurs u ON e.id_utilisateur = u.id_utilisateur
+            JOIN inscriptions i ON e.id_etudiant = i.id_etudiant
+            JOIN classes c ON i.id_classe = c.id_classe
+            JOIN classes_attaches ca ON c.id_classe = ca.id_classe
+            WHERE ca.id_attache = ? AND u.state = 'disponible'";
+
+    $params = [$idAttache];
+
+    if (!empty($filters['id_classe'])) {
+        $sql .= " AND c.id_classe = ?";
+        $params[] = $filters['id_classe'];
+    }
+
+    if (!empty($filters['annee_scolaire'])) {
+        $sql .= " AND i.annee_scolaire = ?";
+        $params[] = $filters['annee_scolaire'];
+    }
+
+    if (!empty($filters['search'])) {
+        $sql .= " AND (u.nom LIKE ? OR u.prenom LIKE ? OR e.matricule LIKE ?)";
+        $searchTerm = "%{$filters['search']}%";
+        array_push($params, $searchTerm, $searchTerm, $searchTerm);
+    }
+
+    $sql .= " ORDER BY u.nom, u.prenom";
+
+    return paginateQuery($sql, $params);
+}
+
+function estEnPeriodeInscription(string $type = 'inscription'): bool
+{
+    // Récupération des dates de configuration depuis la base
+    $config = fetchResult(
+        "SELECT valeur FROM config WHERE cle = ?",
+        ["periode_{$type}_debut"],
+        false
+    );
+
+    $dateDebut = $config ? new DateTime($config['valeur']) : null;
+
+    $config = fetchResult(
+        "SELECT valeur FROM config WHERE cle = ?",
+        ["periode_{$type}_fin"],
+        false
+    );
+
+    $dateFin = $config ? new DateTime($config['valeur']) : null;
+
+    // Si pas de configuration, période toujours ouverte
+    if (!$dateDebut || !$dateFin) {
+        return true;
+    }
+
+    $now = new DateTime();
+
+    return $now >= $dateDebut && $now <= $dateFin;
+}
+
+function generateMatricule(): string
+{
+    // 1. Récupérer le dernier matricule utilisé depuis la base
+    $dernierMatricule = fetchResult(
+        "SELECT matricule FROM etudiants 
+         WHERE matricule LIKE ? 
+         ORDER BY id_etudiant DESC LIMIT 1",
+        ['ET' . date('Y') . '%'],
+        false
+    );
+
+    // 2. Déterminer le prochain numéro séquentiel
+    $numero = 1; // Valeur par défaut si aucun matricule cette année
+
+    if ($dernierMatricule) {
+        // Extraire la partie numérique du dernier matricule
+        $dernierNumero = (int)substr($dernierMatricule['matricule'], 6);
+        $numero = $dernierNumero + 1;
+    }
+
+    // 3. Formater le numéro sur 4 chiffres avec leading zeros
+    $numeroFormate = str_pad($numero, 4, '0', STR_PAD_LEFT);
+
+    // 4. Construire le matricule complet
+    return 'ET' . date('Y') . $numeroFormate;
+}
+
+function getPeriodeInscription(): array
+{
+    return fetchResult(
+        "SELECT valeur as date_debut 
+         FROM config 
+         WHERE cle = 'periode_inscription_debut'",
+        [],
+        false
+    ) ?: ['date_debut' => 'Non configuré'];
+}
+
+function getPeriodeReinscription(): array
+{
+    return fetchResult(
+        "SELECT valeur as date_debut 
+         FROM config 
+         WHERE cle = 'periode_reinscription_debut'",
+        [],
+        false
+    ) ?: ['date_debut' => 'Non configuré'];
+}
+
+function getDatesPeriodes(): array
+{
+    $periodes = fetchResult(
+        "SELECT cle, valeur 
+         FROM config 
+         WHERE cle IN ('periode_inscription_debut', 'periode_inscription_fin',
+        'periode_reinscription_debut', 'periode_reinscription_fin')"
+    );
+
+    $result = [
+        'inscription' => ['debut' => 'Non configuré', 'fin' => 'Non configuré'],
+        'reinscription' => ['debut' => 'Non configuré', 'fin' => 'Non configuré']
+    ];
+
+    foreach ($periodes as $periode) {
+        if ($periode['cle'] === 'periode_inscription_debut') {
+            $result['inscription']['debut'] = $periode['valeur'];
+        } elseif ($periode['cle'] === 'periode_inscription_fin') {
+            $result['inscription']['fin'] = $periode['valeur'];
+        } elseif ($periode['cle'] === 'periode_reinscription_debut') {
+            $result['reinscription']['debut'] = $periode['valeur'];
+        } elseif ($periode['cle'] === 'periode_reinscription_fin') {
+            $result['reinscription']['fin'] = $periode['valeur'];
+        }
+    }
+
+    return $result;
+}
+
+function emailExists(string $email): bool
+{
+    $result = fetchResult(
+        "SELECT COUNT(*) as count 
+         FROM utilisateurs 
+         WHERE email = ? AND state = 'disponible'",
+        [$email],
+        false
+    );
+
+    return $result && $result['count'] > 0;
+}
+
+function inscrireNouvelEtudiant(array $data): int|false
+{
+    $userId = executeQuery(
+        "INSERT INTO utilisateurs (nom, prenom, email, password, id_role,avatar, telephone, adresse, state)
+         VALUES (?, ?, ?, ?, 4, ?, ?,?, 'disponible')",
+        [
+            $data['nom'],
+            $data['prenom'],
+            $data['email'],
+            $data['password'],
+            $data['avatar'],
+            $data['telephone'],
+            $data['adresse']
+        ],
+        true
+    );
+
+    if (!$userId) return false;
+
+    // 2. Création de l'étudiant
+    $etudiantId = executeQuery(
+        "INSERT INTO etudiants (id_utilisateur, matricule, date_inscription, id_classe)
+         VALUES (?, ?, CURDATE(), ?)",
+        [$userId, $data['matricule'], $data['id_classe']],
+        true
+    );
+
+    if (!$etudiantId) return false;
+
+    // 3. Création de l'inscription
+    $inscriptionId = executeQuery(
+        "INSERT INTO inscriptions (id_etudiant, id_classe, annee_scolaire, date_inscription, statut, est_reinscription)
+         VALUES (?, ?, ?, CURDATE(), 'validée', 0)",
+        [$etudiantId, $data['id_classe'], $data['annee_scolaire']],
+        true
+    );
+
+    return $inscriptionId ? $etudiantId : false;
+}
+
+function reinscrireEtudiant(int $idEtudiant, int $idClasse, string $anneeScolaire, bool $isRedoublement): bool
+{
+    $existingInscription = getExistingInscription($idEtudiant, $anneeScolaire);
+
+    if ($existingInscription) {
+        if (!updateExistingInscription($existingInscription['id_inscription'], $idClasse, $isRedoublement)) {
+            return false;
+        }
+    } else {
+        if (!createNewInscription($idEtudiant, $idClasse, $anneeScolaire, $isRedoublement)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function getExistingInscription(int $idEtudiant, string $anneeScolaire): ?array
+{
+    return fetchResult(
+        "SELECT id_inscription FROM inscriptions 
+         WHERE id_etudiant = ? AND annee_scolaire = ?",
+        [$idEtudiant, $anneeScolaire],
+        false
+    );
+}
+
+function updateExistingInscription(int $idInscription, int $idClasse, bool $isRedoublement): bool
+{
+    $stmt = executeQuery(
+        "UPDATE inscriptions SET 
+         id_classe = ?, 
+         redoublement = ?,
+         statut = 1,
+         date_inscription = NOW()
+         WHERE id_inscription = ?",
+        [$idClasse, $isRedoublement ? 1 : 0, $idInscription]
+    );
+
+    return $stmt !== false && $stmt->rowCount() > 0;
+}
+
+function createNewInscription(int $idEtudiant, int $idClasse, string $anneeScolaire, bool $isRedoublement): bool
+{
+    // Désactiver les anciennes inscriptions
+    executeQuery(
+        "UPDATE inscriptions SET statut = 'validée'
+         WHERE id_etudiant = ?",
+        [$idEtudiant]
+    );
+
+    // Créer nouvelle inscription
+    return executeQuery(
+        "INSERT INTO inscriptions 
+         (id_etudiant, id_classe, annee_scolaire, date_inscription, redoublement, statut)
+         VALUES (?, ?, ?, NOW(), ?, 'validée')",
+        [$idEtudiant, $idClasse, $anneeScolaire, $isRedoublement ? 1 : 0]
+    );
 }

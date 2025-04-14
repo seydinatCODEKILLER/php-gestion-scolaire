@@ -34,6 +34,13 @@ switch ($page) {
         $justifications = $data["justifications"]["data"];
         $paginations = $data["justifications"]["pagination"];
         break;
+    case 'inscriptions':
+        $contenue = "Gestion des inscriptions";
+        $data = handleInscriptionData($idAttache);
+        extract($data);
+        $pagination = $etudiants["pagination"];
+        $etudiants = $etudiants["data"];
+        break;
     default:
         redirectURL("notFound", "error");
         break;

@@ -1,6 +1,6 @@
 <div class="w-1/2 hidden lg:block">
     <img
-        src="https://img.freepik.com/vecteurs-libre/illustration-concept-travail-n-importe-ou_114360-4317.jpg?uid=R105310362&ga=GA1.1.1591275311.1702855758&semt=ais_hybrid"
+        src="https://img.freepik.com/vecteurs-libre/illustration-concept-fraicheur_114360-3768.jpg?uid=R105310362&ga=GA1.1.1591275311.1702855758&semt=ais_hybrid&w=740"
         alt=""
         class="w-full h-full object-cover" />
 </div>
@@ -15,7 +15,7 @@
     </div>
     <div class="flex justify-start">
         <div class="flex items-center gap-2 text-xl animate-bounce">
-            <i class="ri-funds-fill text-xl"></i>
+            <i class="ri-book-open-fill text-xl"></i>
             <span class="font-medium text-gray-800">Academica.co</span>
         </div>
     </div>

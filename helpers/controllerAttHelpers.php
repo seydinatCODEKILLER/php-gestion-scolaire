@@ -134,3 +134,130 @@ function handleStudentAttachedData(int $idAttache): array
     }
     return $data;
 }
+
+function handleInscriptionData(int $idAttache): array
+{
+    $data = [
+        'filtered' => [
+            'id_classe' => $_GET['id_classe'] ?? '',
+            'annee_scolaire' => $_GET['annee_scolaire'] ?? getAnneeScolaireActuelle(),
+            'search' => $_GET['search'] ?? ''
+        ],
+        'classes' => getClassesByAttache($idAttache),
+        'annees_scolaires' => getAnneesScolaires(),
+        'periodes' => getDatesPeriodes()
+    ];
+    $data['etudiants'] = getEtudiantsInscrits($idAttache, $data["filtered"]);
+    $data['periode_inscription'] = estEnPeriode('inscription');
+    $data['periode_reinscription'] = estEnPeriode('reinscription');
+    handleReinscriptionRequest();
+    handleInscriptionRequest();
+    return $data;
+}
+
+function getAnneeScolaireActuelle(): string
+{
+    $anneeCourante = (int)date('Y');
+    $moisCourant = (int)date('m');
+
+    // Si on est après août (mois >= 9), on est dans la nouvelle année scolaire
+    if ($moisCourant >= 9) {
+        return $anneeCourante . '-' . ($anneeCourante + 1);
+    }
+
+    // Sinon, on est encore dans l'année scolaire précédente
+    return ($anneeCourante - 1) . '-' . $anneeCourante;
+}
+
+function getAnneesScolaires(int $nbAnnees = 5): array
+{
+    $annees = [];
+    $anneeActuelle = getAnneeScolaireActuelle();
+    $anneeReference = (int)explode('-', $anneeActuelle)[0];
+
+    for ($i = $nbAnnees; $i >= 1; $i--) {
+        $anneeDebut = $anneeReference - $i + 1;
+        $annees[] = $anneeDebut . '-' . ($anneeDebut + 1);
+    }
+
+    // Ajoute l'année en cours si elle n'est pas déjà incluse
+    if (!in_array($anneeActuelle, $annees)) {
+        $annees[] = $anneeActuelle;
+    }
+
+    return array_reverse($annees); // Du plus ancien au plus récent
+}
+
+function estEnPeriode(string $type): bool
+{
+    $periodes = getDatesPeriodes();
+    $now = new DateTime();
+
+    try {
+        $debut = new DateTime($periodes[$type]['debut']);
+        $fin = new DateTime($periodes[$type]['fin']);
+
+        return $now >= $debut && $now <= $fin;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function handleInscriptionRequest(): void
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscrire'])) {
+        if (validateInscriptionEtudiant($_POST)) {
+            $avatar = null;
+            if (!empty($_FILES['avatar']['name'])) {
+                $avatar = uploadAvatar($_FILES['avatar'], 'etudiant', 'etu_');
+            }
+
+            $studentData = [
+                'nom' => trim($_POST['nom']),
+                'prenom' => trim($_POST['prenom']),
+                'email' => trim($_POST['email']),
+                'password' => $_POST['password'],
+                'telephone' => !empty($_POST['telephone']) ? trim($_POST['telephone']) : null,
+                'adresse' => !empty($_POST['adresse']) ? trim($_POST['adresse']) : null,
+                'matricule' => trim($_POST['matricule']),
+                'id_classe' => (int)$_POST['id_classe'],
+                'annee_scolaire' => trim($_POST['annee_scolaire']),
+                'avatar' => $avatar
+            ];
+            // dumpDie($studentData);
+            $etudiantId = inscrireNouvelEtudiant($studentData);
+
+            if ($etudiantId) {
+                setSuccess("Étudiant inscrit avec succès");
+                redirectURL("attacher", "inscriptions");
+            } else {
+                setFieldError("general", "Une erreur est survenue lors de l'inscription");
+                if ($avatar && file_exists(ROOT_PATH . "/public/uploads/etudiant/$avatar")) {
+                    unlink(ROOT_PATH . "/public/uploads/etudiant/$avatar");
+                }
+            }
+        }
+    }
+}
+
+function handleReinscriptionRequest(): void
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reinscrire'])) {
+        $idEtudiant = $_POST['id_etudiant'] ?? null;
+        $idClasse = $_POST['id_classe'] ?? null;
+        $anneeScolaire = $_POST['annee_scolaire'] ?? null;
+        $isRedoublement = isset($_POST['redoublement']) && $_POST['redoublement'] === '1';
+
+        $success = reinscrireEtudiant($idEtudiant, $idClasse, $anneeScolaire, $isRedoublement);
+
+        if ($success) {
+            $message = $isRedoublement
+                ? "Redoublement effectué avec succès"
+                : "Réinscription effectuée avec succès";
+            setSuccess($message);
+            redirectURL("attacher", "inscriptions");
+        } else {
+            setFieldError('general', 'Erreur lors de la réinscription');
+        }
+    }
+}

@@ -205,3 +205,17 @@ function validateDataAddCours(array $data): bool
 
     return empty(getFieldErrors());
 }
+
+function validateInscriptionEtudiant(array $data): bool
+{
+    $required = ['nom', 'prenom', 'email', 'password', 'matricule', 'id_classe', 'telephone', 'annee_scolaire', 'adresse'];
+    foreach ($required as $field) {
+        if (empty($data[$field])) {
+            setFieldError($field, "Ce champ $field est obligatoire");
+        }
+    }
+    if (emailExists($data['email'])) {
+        setFieldError('email', "Cet email est déjà utilisé");
+    }
+    return empty(getFieldErrors());
+}

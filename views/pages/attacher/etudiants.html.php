@@ -84,38 +84,51 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-                <?php foreach ($etudiants as $e): ?>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $e['matricule'] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $e['nom'] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $e['prenom'] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= date('d/m/Y', strtotime($e['date_inscription'])) ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $e['classe'] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $e['filiere'] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap"><?= $e['niveau'] ?></td>
-                        <td class="px-6 py-2 whitespace-nowrap">
-                            <?php if ($e['statut'] == 'disponible'): ?>
-                                <span class="badge badge-soft badge-info"><?= $e['statut'] ?></span>
-                            <?php else: ?>
-                                <span class="badge badge-soft badge-error"><?= $e['statut'] ?></span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="px-6 py-2 whitespace-nowrap text-right">
-                            <div class="dropdown dropdown-end">
-                                <button tabindex="0" class="btn btn-ghost btn-sm">
-                                    <i class="ri-more-2-fill"></i>
-                                </button>
-                                <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-white rounded-box w-52">
-                                    <li>
-                                        <a href="?controllers=attacher&page=etudiants&details_student=<?= $e['id_etudiant'] ?>">
-                                            <i class="ri-eye-line"></i> Voir absences
-                                        </a>
-                                    </li>
-                                </ul>
+                <?php if (!empty($etudiants)): ?>
+                    <?php foreach ($etudiants as $e): ?>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-2 whitespace-nowrap"><?= $e['matricule'] ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= $e['nom'] ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= $e['prenom'] ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= date('d/m/Y', strtotime($e['date_inscription'])) ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= $e['classe'] ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= $e['filiere'] ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap"><?= $e['niveau'] ?></td>
+                            <td class="px-6 py-2 whitespace-nowrap">
+                                <?php if ($e['statut'] == 'disponible'): ?>
+                                    <span class="badge badge-soft badge-info"><?= $e['statut'] ?></span>
+                                <?php else: ?>
+                                    <span class="badge badge-soft badge-error"><?= $e['statut'] ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-6 py-2 whitespace-nowrap text-right">
+                                <div class="dropdown dropdown-end">
+                                    <button tabindex="0" class="btn btn-ghost btn-sm">
+                                        <i class="ri-more-2-fill"></i>
+                                    </button>
+                                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-white rounded-box w-52">
+                                        <li>
+                                            <a href="?controllers=attacher&page=etudiants&details_student=<?= $e['id_etudiant'] ?>">
+                                                <i class="ri-eye-line"></i> Voir absences
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="9" class="px-6 py-4 text-center">
+                            <div class="flex flex-col items-center justify-center gap-4">
+                                <img src="assets/recherche.png" alt="Aucun étudiant" class="">
+                                <div class="text-gray-500 text-sm font-medium">
+                                    Aucun etudiants disponibles
+                                </div>
                             </div>
                         </td>
                     </tr>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
         <?= renderPagination($pagination, array_merge(['controllers' => 'attacher', 'page' => 'etudiants'])) ?>

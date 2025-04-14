@@ -45,6 +45,14 @@
                         <span>Absences</span>
                     </a>
                 </li>
+                <li class="py-2 px-4 <?= $page === 'inscriptions' ? 'border-l-4 border-green-500 bg-gray-700 rounded' : 'hover:bg-gray-700 hover:rounded-3xl' ?>">
+                    <a
+                        href="<?= ROOT_URL ?>?controllers=attacher&page=inscriptions"
+                        class="font-medium gap-3 flex items-center text-sm">
+                        <i class="ri-git-repository-commits-line text-lg"></i>
+                        <span>Inscriptions</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>
@@ -52,7 +60,7 @@
         <button
             class="px-2 py-2 bg-gray-700 text-white hover:bg-green-500 rounded-3xl font-medium shadow-xl w-full">
             <i class="ri-logout-box-r-line font-medium"></i>
-            <span>Deconnexion</span>
+            <span>Déconnexion</span>
         </button>
     </a>
 </div>
