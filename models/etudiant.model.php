@@ -259,3 +259,115 @@ function enregistrerJustification(int $id_absence, int $id_etudiant, string $mot
     $resultUpdate = executeQuery($sqlUpdateAbsence, $paramsUpdate);
     return $resultUpdate !== false;
 }
+
+
+function getJustificationsByEtudiant(int $idEtudiant, array $filters = [], int $page = 1, int $perPage = 3): array
+{
+    $sql = "SELECT 
+                j.id_justification,
+                j.date_justification,
+                j.motif,
+                j.pieces_jointes,
+                j.statut,
+                j.commentaire_traitement,
+                j.date_traitement,
+                u.nom AS traitant_nom,
+                u.prenom AS traitant_prenom,
+                a.date_absence,
+                c.date_cours,
+                m.libelle AS module_libelle,
+                CONCAT(p.nom, ' ', p.prenom) AS professeur_nom,
+                p.avatar
+            FROM 
+                justifications j
+            JOIN 
+                absences a ON j.id_absence = a.id_absence
+            JOIN 
+                cours c ON a.id_cours = c.id_cours
+            JOIN 
+                modules m ON c.id_module = m.id_module
+            JOIN 
+                professeurs pr ON c.id_professeur = pr.id_professeur
+            JOIN 
+                utilisateurs p ON pr.id_utilisateur = p.id_utilisateur
+            LEFT JOIN 
+                utilisateurs u ON j.id_traitant = u.id_utilisateur
+            WHERE 
+                j.id_etudiant = ?";
+
+    $params = [$idEtudiant];
+    if (!empty($filters['statut'])) {
+        $sql .= " AND j.statut = ?";
+        $params[] = $filters['statut'];
+    }
+
+
+    $sql .= " ORDER BY j.date_justification DESC";
+    return paginateQuery($sql, $params, $page, $perPage);
+}
+
+/**
+ * Récupère une demande de justification par son ID
+ * 
+ * @param int $id_justification ID de la justification à récupérer
+ * @return array|false Retourne les données de la justification ou false si non trouvée
+ */
+function getJustificationById(int $id_justification): array|false
+{
+    $sql = "SELECT 
+                j.id_justification,
+                j.id_absence,
+                j.id_etudiant,
+                j.date_justification,
+                j.motif,
+                j.pieces_jointes,
+                j.statut,
+                j.commentaire_traitement,
+                j.date_traitement,
+                j.id_traitant,
+                u_traitant.nom AS traitant_nom,
+                u_traitant.prenom AS traitant_prenom,
+                a.date_absence,
+                c.id_cours,
+                c.date_cours,
+                c.heure_debut,
+                c.heure_fin,
+                c.salle,
+                m.id_module,
+                m.libelle AS module_libelle,
+                m.code_module,
+                p.id_professeur,
+                u_prof.nom AS professeur_nom,
+                u_prof.prenom AS professeur_prenom,
+                u_prof.avatar AS professeur_avatar,
+                e.matricule,
+                u_etud.nom AS etudiant_nom,
+                u_etud.prenom AS etudiant_prenom,
+                u_etud.avatar AS etudiant_avatar,
+                cl.id_classe,
+                cl.libelle AS classe_libelle
+            FROM 
+                justifications j
+            JOIN 
+                absences a ON j.id_absence = a.id_absence
+            JOIN 
+                cours c ON a.id_cours = c.id_cours
+            JOIN 
+                modules m ON c.id_module = m.id_module
+            JOIN 
+                professeurs p ON c.id_professeur = p.id_professeur
+            JOIN 
+                utilisateurs u_prof ON p.id_utilisateur = u_prof.id_utilisateur
+            JOIN 
+                etudiants e ON j.id_etudiant = e.id_etudiant
+            JOIN 
+                utilisateurs u_etud ON e.id_utilisateur = u_etud.id_utilisateur
+            LEFT JOIN 
+                utilisateurs u_traitant ON j.id_traitant = u_traitant.id_utilisateur
+            LEFT JOIN
+                classes cl ON e.id_classe = cl.id_classe
+            WHERE 
+                j.id_justification = ?";
+
+    return fetchResult($sql, [$id_justification], false);
+}

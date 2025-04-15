@@ -63,7 +63,6 @@ function handleRequestAbsences($id_etudiant): array
     return $data;
 }
 
-
 function handleCRUDAbsences($id_etudiant)
 {
     if (is_request_method("post")) {
@@ -74,12 +73,6 @@ function handleCRUDAbsences($id_etudiant)
             }
             $id_absence =  $_POST["id_absence"] ?? null;
             $motif = $_POST["motif"];
-            $data = [
-                "id_absence" => $id_absence,
-                "id_etudiant" => $id_etudiant,
-                "motif" => $motif,
-                "piece_jointe" => $piece_jointe
-            ];
             $justificationsId = enregistrerJustification($id_absence, $id_etudiant, $motif, $piece_jointe);
             if ($justificationsId) {
                 setSuccess("Jstification envoyer avec succès");
@@ -92,4 +85,21 @@ function handleCRUDAbsences($id_etudiant)
             }
         }
     }
+}
+
+function handleJustificationRequest($id_etudiant)
+{
+    $currentPage = max(1, $_GET['p'] ?? 1);
+    $data = [
+        'filtered' => [
+            'statut' => $_GET["statut"] ?? "",
+        ],
+    ];
+
+    if (isset($_GET["details_justification"])) {
+        $data["details"] = getJustificationById($_GET["details_justification"]);
+    }
+
+    $data["justifications"] = getJustificationsByEtudiant($id_etudiant, $data["filtered"], $currentPage);
+    return $data;
 }

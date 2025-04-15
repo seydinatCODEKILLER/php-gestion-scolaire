@@ -21,6 +21,11 @@ switch ($page) {
         break;
     case 'justifications':
         $contenue = "Gestion des justifications";
+        $data = handleJustificationRequest($idEtudiant);
+        extract($data);
+        $justificationsToShow = $justifications['data'];
+        // dumpDie($data);
+        $pagination = $justifications["pagination"];
         break;
     case 'absences':
         $contenue = "Gestion des absences";
