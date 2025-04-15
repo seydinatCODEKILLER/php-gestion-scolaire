@@ -33,7 +33,7 @@ function getDashboardStateForStudent($id_etudiant): array
     ];
 }
 
-function handleRequestCourse($id_etudiant,): array
+function handleRequestCourse($id_etudiant): array
 {
     $currentPage = max(1, $_GET['p'] ?? 1);
     $data = [
@@ -48,4 +48,48 @@ function handleRequestCourse($id_etudiant,): array
     ];
     $data['cours'] = getCoursEtudiantAnneeEnCours($id_etudiant, $data["filtered"], $currentPage);
     return $data;
+}
+
+function handleRequestAbsences($id_etudiant): array
+{
+    $data = [
+        'filtered' => [
+            'date_debut' => $_GET["date_debut"] ?? "",
+            'date_fin' => $_GET["date_fin"] ?? "",
+        ],
+    ];
+    handleCRUDAbsences($id_etudiant);
+    $data["absences"] = getAbsencesNonJustifiees($id_etudiant, $data["filtered"]);
+    return $data;
+}
+
+
+function handleCRUDAbsences($id_etudiant)
+{
+    if (is_request_method("post")) {
+        if (validateAbsenceEtudiant($_POST)) {
+            $piece_jointe = null;
+            if (isset($_FILES["piece_jointe"]["name"])) {
+                $piece_jointe = uploadAvatar($_FILES["piece_jointe"], "jointures", "jr_");
+            }
+            $id_absence =  $_POST["id_absence"] ?? null;
+            $motif = $_POST["motif"];
+            $data = [
+                "id_absence" => $id_absence,
+                "id_etudiant" => $id_etudiant,
+                "motif" => $motif,
+                "piece_jointe" => $piece_jointe
+            ];
+            $justificationsId = enregistrerJustification($id_absence, $id_etudiant, $motif, $piece_jointe);
+            if ($justificationsId) {
+                setSuccess("Jstification envoyer avec succès");
+                redirectURL("etudiant", "absences");
+            } else {
+                setFieldError("general", "Une erreur est survenue lors de l'inscription");
+                if ($piece_jointe && file_exists(ROOT_PATH . "/public/uploads/jointures/$piece_jointe")) {
+                    unlink(ROOT_PATH . "/public/uploads/jointures/$piece_jointe");
+                }
+            }
+        }
+    }
 }

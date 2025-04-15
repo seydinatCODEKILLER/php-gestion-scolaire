@@ -126,15 +126,6 @@ function getIdEtudiantByIdUtilisateur(int $idUtilisateur): ?int
 }
 
 /**
- * Récupère tous les cours d'un étudiant avec possibilité de filtrage
- * 
- * @param int $id_etudiant ID de l'étudiant
- * @param array $filters Tableau de filtres (date_debut, date_fin, id_semestre, statut)
- * @param int $page Numéro de page pour la pagination
- * @param int $perPage Nombre d'éléments par page
- * @return array Résultats paginés
- */
-/**
  * Récupère les cours d'un étudiant pour l'année scolaire en cours
  * 
  * @param int $id_etudiant ID de l'étudiant
@@ -198,4 +189,73 @@ function getCoursEtudiantAnneeEnCours(int $id_etudiant, array $filters = [], int
     $sql .= " ORDER BY c.date_cours ASC, c.heure_debut ASC";
 
     return paginateQuery($sql, $params, $page, $perPage);
+}
+
+/**
+ * Récupère les absences non justifiées d'un étudiant
+ * 
+ * @param int $id_etudiant
+ * @param array $filters (optionnel)
+ * @return array
+ */
+function getAbsencesNonJustifiees(int $id_etudiant, array $filters = []): array
+{
+    $sql = "SELECT a.id_absence, a.date_absence, a.heure_marquage,
+            c.heure_debut, c.heure_fin, c.salle,
+            m.libelle as module, 
+            CONCAT(u.prenom, ' ', u.nom) as professeur
+            FROM absences a
+            JOIN cours c ON a.id_cours = c.id_cours
+            JOIN modules m ON c.id_module = m.id_module
+            JOIN professeurs p ON c.id_professeur = p.id_professeur
+            JOIN utilisateurs u ON p.id_utilisateur = u.id_utilisateur
+            WHERE a.id_etudiant = ?
+            AND a.justified = 'en attente'";
+
+    $params = [$id_etudiant];
+
+    // Filtre par date
+    if (!empty($filters['date_debut'])) {
+        $sql .= " AND a.date_absence >= ?";
+        $params[] = $filters['date_debut'];
+    }
+
+    if (!empty($filters['date_fin'])) {
+        $sql .= " AND a.date_absence <= ?";
+        $params[] = $filters['date_fin'];
+    }
+
+    $sql .= " ORDER BY a.date_absence DESC, c.heure_debut DESC";
+
+    return fetchResult($sql, $params) ?: [];
+}
+
+/**
+ * Enregistre une justification d'absence
+ * 
+ * @param int $id_absence
+ * @param int $id_etudiant
+ * @param string $motif
+ * @param string|null $fichier (chemin du fichier)
+ * @return bool
+ */
+
+function enregistrerJustification(int $id_absence, int $id_etudiant, string $motif, ?string $fichier = null): bool
+{
+    // 1. Enregistrer la justification
+    $sqlJustification = "INSERT INTO justifications 
+    (id_absence, id_etudiant, motif, pieces_jointes, date_justification) 
+    VALUES (?, ?, ?, ?, NOW())";
+    $paramsJustification = [$id_absence, $id_etudiant, $motif, $fichier];
+
+    $resultJustification = executeQuery($sqlJustification, $paramsJustification);
+    if (!$resultJustification) {
+        return false;
+    }
+
+    // 2. Mettre à jour le statut de l'absence
+    $sqlUpdateAbsence = "UPDATE absences SET justified = 'justifier' WHERE id_absence = ?";
+    $paramsUpdate = [$id_absence];
+    $resultUpdate = executeQuery($sqlUpdateAbsence, $paramsUpdate);
+    return $resultUpdate !== false;
 }

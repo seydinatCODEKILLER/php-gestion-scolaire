@@ -217,3 +217,12 @@ function validateInscriptionEtudiant(array $data): bool
     }
     return empty(getFieldErrors());
 }
+
+function validateAbsenceEtudiant(array $data): bool
+{
+
+    if (empty($data["motif"])) {
+        setFieldError('motif', "le motif est requise");
+    }
+    return empty(getFieldErrors());
+}

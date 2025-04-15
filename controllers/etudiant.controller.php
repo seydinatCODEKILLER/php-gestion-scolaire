@@ -19,6 +19,14 @@ switch ($page) {
         $coursSuivit = $cours["data"];
         $pagination = $cours["pagination"];
         break;
+    case 'justifications':
+        $contenue = "Gestion des justifications";
+        break;
+    case 'absences':
+        $contenue = "Gestion des absences";
+        $data = handleRequestAbsences($idEtudiant);
+        extract($data);
+        break;
     default:
         redirectURL("notFound", "error");
         break;

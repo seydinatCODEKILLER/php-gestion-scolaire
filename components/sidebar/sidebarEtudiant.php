@@ -37,7 +37,7 @@
                         <span>Justifications</span>
                     </a>
                 </li>
-                <li class="py-2 px-4 <?= $page === 'etudiants' ? 'bg-gray-50 rounded border border-purple-300' : 'hover:bg-gray-50' ?>">
+                <li class="py-2 px-4 <?= $page === 'absences' ? 'bg-gray-50 rounded border border-purple-300' : 'hover:bg-gray-50' ?>">
                     <a
                         href="<?= ROOT_URL ?>?controllers=etudiant&page=absences"
                         class="font-medium gap-3 flex items-center text-sm">

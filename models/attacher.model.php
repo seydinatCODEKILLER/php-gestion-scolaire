@@ -62,12 +62,13 @@ function getIdAttacheByIdUtilisateur(int $idUtilisateur): ?int
 
 function getClassesWithStats(int $idAttache, array $filters = []): array
 {
-    $sql = "SELECT c.id_classe, c.libelle, c.annee_scolaire,
+    $sql = "SELECT c.id_classe, c.libelle, an.libelle annee_scolaire,
             COUNT(DISTINCT e.id_etudiant) as nb_etudiants,
             COUNT(DISTINCT a.id_absence) as nb_absences,
             f.libelle as filiere
             FROM classes c
             JOIN filieres f ON c.id_filiere = f.id_filiere
+            JOIN annee_scolaire an ON an.id_annee = c.id_annee
             JOIN classes_attaches ca ON c.id_classe = ca.id_classe
             LEFT JOIN inscriptions i ON c.id_classe = i.id_classe
             LEFT JOIN etudiants e ON i.id_etudiant = e.id_etudiant
@@ -199,8 +200,9 @@ function getAbsencesByEtudiant(int $idEtudiant, array $filters = [], int $page =
 
 function getClassesByAttache(int $idAttache): array
 {
-    $sql = "SELECT c.id_classe, f.libelle filiere, c.libelle, c.annee_scolaire, c.capacite_max, c.state
+    $sql = "SELECT c.id_classe, f.libelle filiere, c.libelle, an.libelle annee_scolaire, c.capacite_max, c.state
             FROM classes c
+            JOIN annee_scolaire an ON an.id_annee = c.id_annee
             JOIN classes_attaches ca ON c.id_classe = ca.id_classe
             JOIN filieres f ON f.id_filiere = c.id_filiere
             WHERE ca.id_attache = ?";
