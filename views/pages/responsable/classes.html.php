@@ -84,7 +84,12 @@
                 <!-- Année scolaire -->
                 <div class="form-control">
                     <label class="label font-medium">Année scolaire</label>
-                    <input type="text" value="<?= htmlspecialchars($classeToEdit['annee_scolaire'] ?? $_POST['annee_scolaire'] ?? '') ?>" name="annee_scolaire" placeholder="Ex: 2023-2024" class="px-2 py-2 rounded border <?= getFieldError('annee_scolaire') ? 'border-red-500' : 'border-gray-300' ?> w-full">
+                    <select name="annee_scolaire" class="px-2 py-2 rounded border <?= getFieldError('annee_scolaire') ? 'border-red-500' : 'border-gray-300' ?> w-full">
+                        <option value="">Sélectionnez un année</option>
+                        <?php foreach ($annees as $annee): ?>
+                            <option value="<?= $annee['id_annee'] ?>" <?= ($classeToEdit['id_annee'] ?? $_POST['annee_scolaire'] ?? '') == $annee['id_annee'] ? 'selected' : '' ?>><?= htmlspecialchars($annee['libelle']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                     <p class="text-red-500"><?= getFieldError("annee_scolaire") ?? "" ?></p>
                 </div>
                 <!-- Boutons de soumission -->

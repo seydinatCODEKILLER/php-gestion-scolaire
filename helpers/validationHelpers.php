@@ -27,8 +27,6 @@ function validateDataAddClasse(array $data): bool
     }
     if (empty($data['annee_scolaire'])) {
         setFieldError('annee_scolaire', "L'année scolaire est obligatoire");
-    } elseif (!preg_match('/^\d{4}-\d{4}$/', $data['annee_scolaire'])) {
-        setFieldError('annee_scolaire', "Format d'année scolaire invalide (ex: 2023-2024)");
     }
     if (empty($data['capacite'])) {
         setFieldError('capacite', "La capacite est obligatoire");

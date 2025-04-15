@@ -55,7 +55,6 @@
                         <div class="group relative p-3 border rounded-lg border-indigo-100 bg-indigo-50/30 transition-all duration-300">
                             <!-- Fond décoratif au hover -->
                             <div class="absolute inset-0 bg-gradient-to-r from-indigo-50/50 to-white group-opacity-100 rounded-lg transition-opacity duration-300"></div>
-
                             <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-4">
                                 <!-- Plage horaire -->
                                 <div class="md:col-span-2 flex items-center">
@@ -71,7 +70,6 @@
                                         </p>
                                     </div>
                                 </div>
-
                                 <!-- Module et professeur -->
                                 <div class="md:col-span-7">
                                     <h3 class="font-semibold text-gray-800 text-lg mb-1 group-hover:text-indigo-600 transition-colors">
@@ -96,14 +94,13 @@
                             </div>
                         </div>
                     <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="flex flex-col gap-3 items-center justify-center">
-                        <img src="assets/recherche.png" class="object-cover" alt="">
-                        <p class="text-sm text-gray-500">Aucun cours prevue pour cette semaine</p>
-                    </div>
-                <?php endif; ?>
                 </div>
-                <div></div>
+            <?php else: ?>
+                <div class="flex flex-col gap-3 items-center justify-center">
+                    <img src="assets/recherche.png" class="object-cover" alt="">
+                    <p class="text-sm text-gray-500">Aucun cours prevue pour cette semaine</p>
+                </div>
+            <?php endif; ?>
         </div>
         <div class="w-full">
             <calendar-date class="cally bg-base-100 border border-base-300 shadow-lg rounded-box w-full">

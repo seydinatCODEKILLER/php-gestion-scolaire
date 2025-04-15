@@ -11,7 +11,13 @@ switch ($page) {
     case 'dashboard':
         $contenue = "Tableau de bord";
         $data = getDashboardStateForStudent($idEtudiant);
-        // dumpDie($data);
+        break;
+    case 'cours':
+        $contenue = "Gestion des cours";
+        $data = handleRequestCourse($idEtudiant);
+        extract($data);
+        $coursSuivit = $cours["data"];
+        $pagination = $cours["pagination"];
         break;
     default:
         redirectURL("notFound", "error");

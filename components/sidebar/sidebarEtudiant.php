@@ -13,7 +13,7 @@
         </div>
         <nav>
             <ul class="flex flex-col gap-1">
-                <li class="py-2 px-4 <?= $page === 'dashboard' ? ' bg-gray-50 rounded' : 'hover:bg-gray-50' ?> ">
+                <li class="py-2 px-4 <?= $page === 'dashboard' ? ' bg-gray-50 rounded border border-purple-300' : 'hover:bg-gray-50' ?> ">
                     <a
                         href="<?= ROOT_URL ?>?controllers=etudiant&page=dashboard"
                         class="font-medium gap-3 flex items-center text-sm">
@@ -21,7 +21,7 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
-                <li class="py-2 px-4 <?= $page === 'classes' ? 'bg-gray-50 rounded ' : 'hover:bg-gray-50' ?> ">
+                <li class="py-2 px-4 <?= $page === 'cours' ? 'bg-gray-50 rounded border border-purple-300' : 'hover:bg-gray-50' ?> ">
                     <a
                         href="<?= ROOT_URL ?>?controllers=etudiant&page=cours"
                         class="font-medium gap-3 flex items-center text-sm">
@@ -29,7 +29,7 @@
                         <span>Mes cours</span>
                     </a>
                 </li>
-                <li class="py-2 px-4 <?= $page === 'justifications' ? 'bg-gray-50 rounded' : 'hover:bg-gray-50' ?>">
+                <li class="py-2 px-4 <?= $page === 'justifications' ? 'bg-gray-50 rounded border border-purple-300' : 'hover:bg-gray-50' ?>">
                     <a
                         href="<?= ROOT_URL ?>?controllers=etudiant&page=justifications"
                         class="font-medium gap-3 flex items-center text-sm">
@@ -37,7 +37,7 @@
                         <span>Justifications</span>
                     </a>
                 </li>
-                <li class="py-2 px-4 <?= $page === 'etudiants' ? 'bg-gray-50 rounded' : 'hover:bg-gray-50' ?>">
+                <li class="py-2 px-4 <?= $page === 'etudiants' ? 'bg-gray-50 rounded border border-purple-300' : 'hover:bg-gray-50' ?>">
                     <a
                         href="<?= ROOT_URL ?>?controllers=etudiant&page=absences"
                         class="font-medium gap-3 flex items-center text-sm">

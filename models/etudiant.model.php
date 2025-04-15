@@ -124,3 +124,78 @@ function getIdEtudiantByIdUtilisateur(int $idUtilisateur): ?int
     $result = fetchResult($sql, [$idUtilisateur], false);
     return $result ? (int) $result['id_etudiant'] : null;
 }
+
+/**
+ * Récupère tous les cours d'un étudiant avec possibilité de filtrage
+ * 
+ * @param int $id_etudiant ID de l'étudiant
+ * @param array $filters Tableau de filtres (date_debut, date_fin, id_semestre, statut)
+ * @param int $page Numéro de page pour la pagination
+ * @param int $perPage Nombre d'éléments par page
+ * @return array Résultats paginés
+ */
+/**
+ * Récupère les cours d'un étudiant pour l'année scolaire en cours
+ * 
+ * @param int $id_etudiant ID de l'étudiant
+ * @param array $filters Filtres supplémentaires
+ * @param int $page Numéro de page
+ * @param int $perPage Nombre d'éléments par page
+ * @return array Résultats paginés
+ */
+function getCoursEtudiantAnneeEnCours(int $id_etudiant, array $filters = [], int $page = 1, int $perPage = 3): array
+{
+    // 1. Récupérer l'année scolaire active
+    $anneeEnCours = fetchResult(
+        "SELECT id_annee FROM annee_scolaire WHERE est_active = TRUE LIMIT 1",
+        [],
+        false
+    );
+
+    if (!$anneeEnCours) {
+        return ['data' => [], 'total' => 0];
+    }
+
+    // 2. Requête principale optimisée
+    $sql = "SELECT 
+                c.id_cours, c.date_cours, c.heure_debut, c.heure_fin,
+                c.salle, c.statut, c.nombre_heures,
+                m.libelle as module, m.code_module,
+                CONCAT(u.prenom, ' ', u.nom) as professeur,
+                p.specialite, u.avatar,
+                s.libelle as semestre,
+                cl.libelle as classe
+            FROM inscriptions i
+            JOIN classes cl ON i.id_classe = cl.id_classe
+            JOIN cours_classes cc ON cc.id_classe = cl.id_classe
+            JOIN cours c ON cc.id_cours = c.id_cours
+            JOIN modules m ON c.id_module = m.id_module
+            JOIN semestres s ON c.id_semestre = s.id_semestre
+            JOIN professeurs p ON c.id_professeur = p.id_professeur
+            JOIN utilisateurs u ON p.id_utilisateur = u.id_utilisateur
+            WHERE i.id_etudiant = ?
+            AND cl.id_annee = ?";
+
+    $params = [$id_etudiant, $anneeEnCours['id_annee']];
+
+    // 3. Gestion dynamique des filtres
+    $filterHandlers = [
+        'date_debut' => fn($v) => [" AND c.date_cours >= ?", $v],
+        'date_fin' => fn($v) => [" AND c.date_cours <= ?", $v],
+        'semestre' => fn($v) => [" AND c.id_semestre = ?", $v],
+        'statut' => fn($v) => [" AND c.statut = ?", $v],
+    ];
+
+    foreach ($filterHandlers as $key => $handler) {
+        if (!empty($filters[$key])) {
+            [$condition, $value] = $handler($filters[$key]);
+            $sql .= $condition;
+            $params[] = $value;
+        }
+    }
+
+    // 4. Tri et pagination
+    $sql .= " ORDER BY c.date_cours ASC, c.heure_debut ASC";
+
+    return paginateQuery($sql, $params, $page, $perPage);
+}

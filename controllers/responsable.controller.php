@@ -29,6 +29,7 @@ switch ($page) {
         $pagination = $result['pagination'];
         $filieres = getAllFileres();
         $niveaux = getAllNiveaux();
+        $annees = getAllAnneesScolaires();
 
         break;
     case 'professeurs':
